@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoCloud - Tài Liệu Kỹ Thuật Vận Hành</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f0f2f5;
+    --bg2: #e8ebf0;
+    --bg3: #e2e5eb;
+    --card: #ffffff;
+    --card-hover: #fafbfc;
+    --border: #d0d5dd;
+    --border2: #b8bfcb;
+    --text: #1e293b;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --accent: #0369a1;
+    --accent2: #0284c7;
+    --accent-light: #e0f2fe;
+    --accent-bg: rgba(3, 105, 161, 0.06);
+    --accent-glow: rgba(3, 105, 161, 0.08);
+    --green: #15803d;
+    --green-light: #f0fdf4;
+    --green-border: #bbf7d0;
+    --green-bg: rgba(21, 128, 61, 0.08);
+    --orange: #b45309;
+    --orange-light: #fffbeb;
+    --orange-border: #fde68a;
+    --orange-bg: rgba(180, 83, 9, 0.08);
+    --red: #b91c1c;
+    --red-light: #fef2f2;
+    --red-border: #fecaca;
+    --red-bg: rgba(185, 28, 28, 0.08);
+    --purple: #7e22ce;
+    --purple-light: #faf5ff;
+    --purple-border: #e9d5ff;
+    --purple-bg: rgba(126, 34, 206, 0.08);
+    --blue: #1d4ed8;
+    --blue-light: #eff6ff;
+    --blue-border: #bfdbfe;
+    --blue-bg: rgba(29, 78, 216, 0.08);
+    --teal: #0f766e;
+    --teal-light: #f0fdfa;
+    --teal-border: #99f6e4;
+    --yellow: #b45309;
+    --yellow-bg: rgba(180, 83, 9, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .slide-container { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: none;
+    flex-direction: column;
+    padding: 40px 60px 80px;
+    overflow-y: auto;
+    animation: fadeIn 0.35s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Nav */
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 30px; z-index: 100;
+    box-shadow: 0 -1px 4px rgba(0,0,0,0.06);
+  }
+  .nav-bar .counter { font-family: 'JetBrains Mono', monospace; color: var(--text3); font-size: 13px; min-width: 80px; }
+  .nav-bar .title { color: var(--text2); font-size: 13px; font-weight: 500; text-align: center; flex: 1; }
+  .nav-btn {
+    background: var(--bg2); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;
+    font-family: 'Inter', sans-serif; transition: all 0.2s;
+  }
+  .nav-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--bg3); z-index: 100; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.4s ease; }
+
+  /* TOC */
+  .toc-toggle {
+    position: fixed; top: 15px; right: 20px;
+    background: var(--card); border: 1px solid var(--border); color: var(--text2);
+    width: 36px; height: 36px; border-radius: 8px; cursor: pointer; z-index: 200;
+    display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .toc-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .toc-panel {
+    position: fixed; top: 0; right: -400px; width: 400px; height: 100vh;
+    background: rgba(255,255,255,0.98); backdrop-filter: blur(16px);
+    border-left: 1px solid var(--border); z-index: 150; transition: right 0.3s ease;
+    overflow-y: auto; padding: 60px 24px 24px;
+    box-shadow: -4px 0 16px rgba(0,0,0,0.08);
+  }
+  .toc-panel.open { right: 0; }
+  .toc-item {
+    padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 12px;
+    color: var(--text2); transition: all 0.2s; margin-bottom: 1px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toc-item:hover { background: var(--bg2); color: var(--text); }
+  .toc-item.active { background: var(--accent-light); color: var(--accent); }
+  .toc-item .num { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--text3); min-width: 24px; }
+  .toc-section { color: var(--text3); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 14px 14px 4px; }
+
+  /* Typography */
+  h1 { font-size: 42px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+  h2 { font-size: 30px; font-weight: 700; line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 20px; }
+  h3 { font-size: 16px; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+  .subtitle { font-size: 16px; color: var(--text2); font-weight: 400; line-height: 1.6; max-width: 750px; }
+  .accent { color: var(--accent); }
+  .green { color: var(--green); }
+  .orange { color: var(--orange); }
+  .purple { color: var(--purple); }
+
+  /* Layout */
+  .grid { display: grid; gap: 14px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card:hover { border-color: var(--accent2); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .card-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .card-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+  .badge-accent { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(3, 105, 161, 0.25); }
+  .badge-green { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+  .badge-orange { background: var(--orange-light); color: var(--orange); border: 1px solid var(--orange-border); }
+  .badge-purple { background: var(--purple-light); color: var(--purple); border: 1px solid var(--purple-border); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); border: 1px solid var(--blue-border); }
+  .badge-red { background: var(--red-light); color: var(--red); border: 1px solid var(--red-border); }
+  .badge-yellow { background: var(--orange-light); color: var(--orange); border: 1px solid var(--orange-border); }
+
+  /* Table */
+  .table-wrap { border-radius: 8px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead { background: var(--bg2); }
+  th { text-align: left; padding: 10px 14px; font-weight: 600; color: var(--text2); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); background: var(--card); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg2); }
+
+  .stat { text-align: center; }
+  .stat-value { font-size: 32px; font-weight: 800; color: var(--accent); line-height: 1.2; }
+  .stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+  /* Diagram */
+  .diagram {
+    background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+    padding: 20px; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; line-height: 1.7; color: #94a3b8; white-space: pre; overflow-x: auto;
+  }
+
+  /* Visual diagram (card-based, replaces ASCII art) */
+  .vis-diagram { padding: 16px 0; }
+  .vis-layer {
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 6px;
+    border: 1px solid; font-size: 12px;
+  }
+  .vis-layer-title { font-weight: 600; font-size: 12px; margin-bottom: 4px; }
+  .vis-layer-desc { font-size: 11px; color: var(--text2); }
+  .vis-arrow { text-align: center; font-size: 14px; color: var(--text3); line-height: 1.2; margin: 2px 0; }
+  .vis-row { display: flex; gap: 10px; margin-bottom: 6px; }
+  .vis-row > .vis-layer { flex: 1; }
+  .vis-box {
+    border-radius: 8px; padding: 10px 14px; border: 1px solid;
+    font-size: 11px; font-weight: 500;
+  }
+
+  /* Highlight */
+  .hl { border-left: 3px solid var(--accent); background: var(--accent-light); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 10px 0; }
+  .hl.green { border-color: var(--green); background: var(--green-light); }
+  .hl.orange { border-color: var(--orange); background: var(--orange-light); }
+  .hl.red { border-color: var(--red); background: var(--red-light); }
+  .hl.purple { border-color: var(--purple); background: var(--purple-light); }
+  .hl.yellow { border-color: var(--orange); background: var(--orange-light); }
+  .hl p { font-size: 13px; line-height: 1.6; }
+  .hl strong { color: var(--text); }
+
+  .section-divider { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+
+  .internal-stamp {
+    position: fixed; top: 15px; left: 20px; z-index: 200;
+    font-size: 10px; font-weight: 600; color: var(--red);
+    background: var(--red-light); border: 1px solid var(--red-border);
+    padding: 4px 12px; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .slide::-webkit-scrollbar { width: 6px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  kbd { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+
+  ul.clean { list-style: none; padding: 0; }
+  ul.clean li { padding: 6px 0; font-size: 13px; color: var(--text2); display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+  .li-icon { flex-shrink: 0; width: 18px; text-align: center; }
+
+  .port { font-family: 'JetBrains Mono'; font-size: 11px; color: var(--accent); background: var(--accent-light); padding: 1px 6px; border-radius: 3px; border: 1px solid rgba(3,105,161,0.2); }
+  .path { font-family: 'JetBrains Mono'; font-size: 11px; color: var(--orange); background: var(--orange-light); padding: 1px 6px; border-radius: 3px; border: 1px solid var(--orange-border); }
+  .ip { font-family: 'JetBrains Mono'; font-size: 11px; color: var(--purple); }
+
+  /* Procedure steps */
+  ol.steps { list-style: none; padding: 0; counter-reset: step-counter; }
+  ol.steps li {
+    counter-increment: step-counter;
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 8px 0; font-size: 13px; color: var(--text2); line-height: 1.5;
+    border-bottom: 1px solid var(--border);
+  }
+  ol.steps li:last-child { border-bottom: none; }
+  ol.steps li::before {
+    content: counter(step-counter);
+    background: var(--accent); color: white;
+    min-width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  ol.steps.green li::before { background: var(--green); }
+  ol.steps.orange li::before { background: var(--orange); }
+  ol.steps.red li::before { background: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="internal-stamp">TÀI LIỆU KỸ THUẬT NỘI BỘ — KHÔNG CHIA SẺ</div>
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+<button class="toc-toggle" id="tocToggle" title="Mục lục">&#9776;</button>
+<div class="toc-panel" id="tocPanel">
+  <div class="toc-section">Tổng Quan Hệ Thống</div>
+  <div class="toc-item" data-slide="0"><span class="num">01</span> Trang bìa</div>
+  <div class="toc-item" data-slide="1"><span class="num">02</span> Kiến trúc tổng thể</div>
+  <div class="toc-item" data-slide="2"><span class="num">03</span> Sơ đồ server & mạng</div>
+
+  <div class="toc-section">Nền Tảng Cloud</div>
+  <div class="toc-item" data-slide="3"><span class="num">04</span> OpenNebula — Tổng quan</div>
+  <div class="toc-item" data-slide="4"><span class="num">05</span> OpenNebula — Tạo & quản lý VM</div>
+  <div class="toc-item" data-slide="5"><span class="num">06</span> KVM & Ảo hóa</div>
+
+  <div class="toc-section">Giám Sát (Monitoring)</div>
+  <div class="toc-item" data-slide="6"><span class="num">07</span> Prometheus & Exporters</div>
+  <div class="toc-item" data-slide="7"><span class="num">08</span> Grafana & Dashboards</div>
+  <div class="toc-item" data-slide="8"><span class="num">09</span> Alertmanager & Cảnh báo</div>
+
+  <div class="toc-section">Bảo Mật (Security)</div>
+  <div class="toc-item" data-slide="9"><span class="num">10</span> Wazuh SIEM</div>
+  <div class="toc-item" data-slide="10"><span class="num">11</span> CrowdSec & YARA</div>
+
+  <div class="toc-section">Lưu Trữ & Mạng</div>
+  <div class="toc-item" data-slide="11"><span class="num">12</span> Ceph Storage</div>
+  <div class="toc-item" data-slide="12"><span class="num">13</span> Network & sFlow</div>
+
+  <div class="toc-section">Vận Hành</div>
+  <div class="toc-item" data-slide="13"><span class="num">14</span> Docker Compose & Khởi động</div>
+  <div class="toc-item" data-slide="14"><span class="num">15</span> Thêm / Xóa host</div>
+  <div class="toc-item" data-slide="15"><span class="num">16</span> Kiểm tra hàng ngày</div>
+  <div class="toc-item" data-slide="16"><span class="num">17</span> Xử lý sự cố</div>
+  <div class="toc-item" data-slide="17"><span class="num">18</span> Bảng tham chiếu Port</div>
+  <div class="toc-item" data-slide="18"><span class="num">19</span> Tổng kết & Tài liệu tham khảo</div>
+</div>
+
+<div class="slide-container" id="slideContainer">
+
+<!-- ============================================ -->
+<!-- SLIDE 0: TRANG BÌA -->
+<!-- ============================================ -->
+<div class="slide active" style="justify-content: center; align-items: center; text-align: center;">
+  <span class="badge badge-red" style="font-size: 12px; padding: 6px 16px; margin-bottom: 20px;">TÀI LIỆU KỸ THUẬT NỘI BỘ</span>
+  <h1 style="font-size: 48px; margin-bottom: 12px;"><span class="accent">Eco</span>Cloud <span style="color: var(--text3); font-size: 28px; font-weight: 400;">Technical Operations</span></h1>
+  <p class="subtitle" style="max-width: 650px; margin: 0 auto 28px;">
+    Tài liệu dành cho đội ngũ kỹ thuật.<br>
+    Hiểu cách hệ thống cloud hoạt động — từ ảo hóa đến giám sát — và cách vận hành hàng ngày.
+  </p>
+  <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;">
+    <span class="badge badge-accent">OpenNebula + KVM</span>
+    <span class="badge badge-green">Prometheus + Grafana</span>
+    <span class="badge badge-orange">Wazuh SIEM</span>
+    <span class="badge badge-purple">Ceph Storage</span>
+    <span class="badge badge-blue">CrowdSec + YARA</span>
+  </div>
+  <div style="color: var(--text3); font-size: 12px;">
+    Công Ty TNHH Công Nghệ EcoCloud &middot; Cập nhật: Tháng 3/2026<br>
+    <span style="color: var(--red);">MẬT — KHÔNG CHIA SẺ BÊN NGOÀI</span>
+  </div>
+  <div style="margin-top: 30px; color: var(--text3); font-size: 12px;">
+    <kbd>&larr;</kbd> <kbd>&rarr;</kbd> chuyển slide &middot; <kbd>&#9776;</kbd> mục lục &middot; 19 slides
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 1: KIẾN TRÚC TỔNG THỂ -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--accent-glow); color: var(--accent);">&#9881;</div>
+    <div><h2 style="margin-bottom: 2px;">Kiến Trúc Tổng Thể</h2><span class="badge badge-accent">ARCHITECTURE</span></div>
+  </div>
+
+  <div class="vis-diagram" style="margin-bottom: 16px;">
+    <!-- Monitoring Server -->
+    <div class="vis-layer" style="background: var(--purple-light); border-color: var(--purple-border); margin-bottom: 8px;">
+      <div class="vis-layer-title" style="color: var(--purple);">MONITORING SERVER — 103.142.137.6 (Ubuntu 22.04 · 16 vCPU · 15GB RAM)</div>
+      <div class="vis-row" style="margin-top: 8px; margin-bottom: 0;">
+        <div class="vis-box" style="background: #faf5ff; border-color: var(--purple-border); color: var(--purple);">Prometheus<br><span style="font-size:10px; color: var(--text3);">:9090</span></div>
+        <div class="vis-box" style="background: var(--green-light); border-color: var(--green-border); color: var(--green);">Grafana<br><span style="font-size:10px; color: var(--text3);">:3000</span></div>
+        <div class="vis-box" style="background: var(--orange-light); border-color: var(--orange-border); color: var(--orange);">Alertmanager<br><span style="font-size:10px; color: var(--text3);">:9093</span></div>
+        <div class="vis-box" style="background: var(--orange-light); border-color: var(--orange-border); color: var(--orange);">Wazuh Stack<br><span style="font-size:10px; color: var(--text3);">:443/:1514</span></div>
+        <div class="vis-box" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); color: var(--accent);">snmp_exporter<br><span style="font-size:10px; color: var(--text3);">:9116</span></div>
+        <div class="vis-box" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); color: var(--accent);">ONE Exporter<br><span style="font-size:10px; color: var(--text3);">:9621</span></div>
+        <div class="vis-box" style="background: var(--blue-light); border-color: var(--blue-border); color: var(--blue);">CS Exporter<br><span style="font-size:10px; color: var(--text3);">:9710</span></div>
+      </div>
+    </div>
+    <div class="vis-arrow">↕ scrape / collect</div>
+    <!-- Bottom row: clusters + network -->
+    <div class="vis-row" style="margin-top: 8px; align-items: stretch;">
+      <div class="vis-layer" style="background: var(--green-light); border-color: var(--green-border); flex: 2;">
+        <div class="vis-layer-title" style="color: var(--green);">KVM CLUSTER 1 (x10) — Oracle Linux 8.6</div>
+        <div class="vis-layer-desc">turbo0201 — turbo0210<br>node_exporter :9100 · libvirt_exporter :9177<br>Wazuh Agent :1514 · CrowdSec :8180 · YARA<br>Ceph MGR :9283 (0201–0203)</div>
+      </div>
+      <div class="vis-layer" style="background: var(--green-light); border-color: var(--green-border); flex: 2;">
+        <div class="vis-layer-title" style="color: var(--green);">KVM CLUSTER 2 (x6) — CentOS 7</div>
+        <div class="vis-layer-desc">node02 — node13<br>node_exporter :9100 · libvirt_exporter :9177<br>Wazuh Agent :1514 · CrowdSec :8080 · YARA</div>
+      </div>
+      <div class="vis-layer" style="background: var(--blue-light); border-color: var(--blue-border); flex: 1.5;">
+        <div class="vis-layer-title" style="color: var(--blue);">NETWORK</div>
+        <div class="vis-layer-desc">Juniper EX4500<br>125.212.255.90<br>SNMP :161<br>sFlow → :6343<br>Syslog → :514<br><span style="color: var(--accent); font-weight:600;">ntopng :3001</span> (trên mon. srv)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hl">
+    <p><strong>Mô hình Pull:</strong> Prometheus chủ động kéo (scrape) metrics từ các exporter mỗi 15-30s. Wazuh dùng mô hình Push — agent đẩy log về manager. CrowdSec dùng Central LAPI — agent gửi alert về server trung tâm.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 2: SƠ ĐỒ SERVER & MẠNG -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--green-bg); color: var(--green);">&#128421;</div>
+    <div><h2 style="margin-bottom: 2px;">Sơ Đồ Server & Mạng</h2><span class="badge badge-green">INVENTORY</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th colspan="4" style="color: var(--green);">CLUSTER 1 — Oracle Linux 8.6</th></tr>
+        <tr><th>Hostname</th><th>IP</th><th>Vai trò</th><th>Ghi chú</th></tr></thead>
+        <tbody>
+          <tr><td>turbo0201</td><td class="ip">103.142.137.2</td><td>KVM + ONE Frontend</td><td>Primary + Ceph MGR</td></tr>
+          <tr><td>turbo0202</td><td class="ip">103.142.137.3</td><td>KVM + ONE Frontend</td><td>HA secondary + Ceph MGR</td></tr>
+          <tr><td>turbo0203</td><td class="ip">103.142.137.4</td><td>KVM + ONE Frontend</td><td>HA tertiary + Ceph MGR</td></tr>
+          <tr><td>turbo0204</td><td class="ip">103.142.137.20</td><td>KVM Host</td><td></td></tr>
+          <tr><td>turbo0205</td><td class="ip">103.142.137.21</td><td>KVM Host</td><td></td></tr>
+          <tr><td>turbo0206</td><td class="ip">103.142.137.22</td><td>KVM Host</td><td></td></tr>
+          <tr><td>turbo0207</td><td class="ip">103.142.137.23</td><td>KVM Host</td><td>Ceph cluster 2</td></tr>
+          <tr><td>turbo0208</td><td class="ip">103.142.137.24</td><td>KVM Host</td><td></td></tr>
+          <tr><td>turbo0209</td><td class="ip">103.142.137.25</td><td>KVM Host</td><td></td></tr>
+          <tr><td>turbo0210</td><td class="ip">103.142.137.26</td><td>KVM Host</td><td>Ceph storage</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="table-wrap" style="margin-bottom: 14px;">
+        <table>
+          <thead><tr><th colspan="4" style="color: var(--blue);">CLUSTER 2 — CentOS 7</th></tr>
+          <tr><th>Hostname</th><th>IP</th><th>Vai trò</th><th>Ghi chú</th></tr></thead>
+          <tbody>
+            <tr><td>node02</td><td class="ip">103.142.137.31</td><td>KVM Host</td><td></td></tr>
+            <tr><td>node03</td><td class="ip">171.244.22.101</td><td>KVM Host</td><td>Mạng khác</td></tr>
+            <tr><td>node04</td><td class="ip">103.142.137.32</td><td>KVM Host</td><td></td></tr>
+            <tr><td>node05</td><td class="ip">103.142.137.30</td><td>KVM Host</td><td style="color:var(--red);">ĐÃ TẮT</td></tr>
+            <tr><td>node11</td><td class="ip">103.142.137.17</td><td>KVM Host</td><td></td></tr>
+            <tr><td>node12</td><td class="ip">103.142.137.18</td><td>KVM Host</td><td></td></tr>
+            <tr><td>node13</td><td class="ip">103.142.137.19</td><td>KVM Host</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th colspan="3" style="color: var(--accent);">HẠ TẦNG CHUNG</th></tr></thead>
+          <tbody>
+            <tr><td>Monitoring Server</td><td class="ip">103.142.137.6</td><td>Ubuntu 22.04</td></tr>
+            <tr><td>Juniper EX4500</td><td class="ip">125.212.255.90</td><td>Core switch</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="hl yellow">
+    <p><strong>Lưu ý CentOS 7 EOL:</strong> Cluster 2 dùng CentOS 7 đã hết hỗ trợ. Package repos đã chuyển sang vault.centos.org. Script cài đặt tự xử lý việc này. Khi cần cài phần mềm mới trên Cluster 2, cần kiểm tra tương thích trước.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 3: OPENNEBULA TỔNG QUAN -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--accent-glow); color: var(--accent);">&#9729;</div>
+    <div><h2 style="margin-bottom: 2px;">OpenNebula — Nền Tảng Cloud</h2><span class="badge badge-accent">CLOUD PLATFORM</span></div>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 16px;">OpenNebula 6.4 là nền tảng quản lý cloud. Nó điều phối việc tạo, chạy, di chuyển và xóa VM trên các KVM host. Tương tự vCenter cho VMware, nhưng mã nguồn mở.</p>
+
+  <div class="card" style="margin-bottom: 16px; border-color: rgba(3,105,161,0.25); background: var(--accent-light);">
+    <div style="display: flex; gap: 20px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3 style="color: var(--accent); margin-bottom: 8px;">OpenNebula là gì?</h3>
+        <p style="font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 10px;">OpenNebula là <strong style="color:var(--text);">Cloud Management Platform</strong> mã nguồn mở — tương tự VMware vCenter nhưng cho KVM. Nó cung cấp một lớp điều phối thống nhất để quản lý toàn bộ lifecycle VM trên nhiều KVM host vật lý.</p>
+        <ul class="clean" style="font-size: 12px;">
+          <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>VM Lifecycle</strong> — Tạo, start, stop, suspend, migrate, delete VM từ một giao diện duy nhất (UI hoặc CLI)</li>
+          <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>High Availability</strong> — 3-node HA: 1 primary (oned chạy) + 2 standby. DB MariaDB replicated. Failover tự động khi node chính chết</li>
+          <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Live Migration</strong> — Di chuyển VM đang chạy giữa các KVM host không downtime (copy RAM state qua mạng)</li>
+          <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Multi-tenancy</strong> — Quản lý Users, Groups, Quotas (giới hạn CPU/RAM/disk mỗi tenant)</li>
+          <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Storage Integration</strong> — Kết nối với Ceph RBD, NFS, local storage cho VM disk images</li>
+          <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Network Management</strong> — Quản lý Virtual Networks, IP pools, VLAN, bridge configuration</li>
+        </ul>
+      </div>
+      <div style="flex: 1;">
+        <h3 style="color: var(--accent); margin-bottom: 8px;">Kiến trúc tổng quan</h3>
+        <div class="vis-diagram" style="padding: 0;">
+          <div class="vis-layer" style="background: var(--accent-light); border-color: rgba(3,105,161,0.3); margin-bottom: 6px;">
+            <div class="vis-layer-title" style="color: var(--accent);">Frontend Layer (turbo0201–0203)</div>
+            <div class="vis-row" style="margin-top: 6px; margin-bottom: 0;">
+              <div class="vis-box" style="background: white; border-color: rgba(3,105,161,0.2); color: var(--accent); flex:1; text-align:center; font-size:10px;">Sunstone<br>Web UI :9869</div>
+              <div class="vis-box" style="background: white; border-color: rgba(3,105,161,0.2); color: var(--accent); flex:1; text-align:center; font-size:10px;">XML-RPC<br>API :2633</div>
+              <div class="vis-box" style="background: white; border-color: rgba(3,105,161,0.2); color: var(--accent); flex:1; text-align:center; font-size:10px;">Scheduler<br>(placement)</div>
+            </div>
+          </div>
+          <div class="vis-arrow">↕ libvirt qemu:///system</div>
+          <div class="vis-layer" style="background: var(--green-light); border-color: var(--green-border); margin: 6px 0;">
+            <div class="vis-layer-title" style="color: var(--green);">KVM Hosts (17 máy)</div>
+            <div class="vis-layer-desc">Chạy QEMU-KVM VMs · node_exporter · libvirt_exporter</div>
+          </div>
+          <div class="vis-arrow">↕ RADOS protocol</div>
+          <div class="vis-layer" style="background: var(--purple-light); border-color: var(--purple-border);">
+            <div class="vis-layer-title" style="color: var(--purple);">Ceph Storage (2 clusters)</div>
+            <div class="vis-layer-desc">~15TB · VM disk images · 3x replication</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-2">
+    <div>
+      <h3>Kiến trúc HA (3 Frontend)</h3>
+      <div class="vis-diagram">
+        <div class="vis-layer" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); margin-bottom: 6px;">
+          <div class="vis-layer-title" style="color: var(--accent);">OpenNebula HA Cluster</div>
+          <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 8px;">
+            <div class="vis-box" style="background: var(--green-light); border-color: var(--green-border); color: var(--green); display:flex; justify-content: space-between; align-items:center;">
+              <span>turbo0201 — oned + sunstone + scheduler + MySQL (primary)</span>
+              <span class="badge badge-green" style="font-size:9px; flex-shrink:0;">PRIMARY</span>
+            </div>
+            <div class="vis-box" style="background: var(--orange-light); border-color: var(--orange-border); color: var(--orange); display:flex; justify-content: space-between; align-items:center;">
+              <span>turbo0202 — oned (standby) + DB replica</span>
+              <span class="badge badge-orange" style="font-size:9px; flex-shrink:0;">SECONDARY</span>
+            </div>
+            <div class="vis-box" style="background: var(--orange-light); border-color: var(--orange-border); color: var(--orange); display:flex; justify-content: space-between; align-items:center;">
+              <span>turbo0203 — oned (standby) + DB replica</span>
+              <span class="badge badge-orange" style="font-size:9px; flex-shrink:0;">TERTIARY</span>
+            </div>
+          </div>
+          <div style="margin-top: 8px; font-size: 11px; color: var(--text2);">XML-RPC API: <span class="port">2633</span> &nbsp;&nbsp; Sunstone Web UI: <span class="port">9869</span></div>
+        </div>
+        <div class="vis-arrow">↓ libvirt qemu:///system</div>
+        <div class="vis-layer" style="background: var(--bg2); border-color: var(--border); margin-top: 6px;">
+          <div class="vis-layer-title" style="color: var(--text);">KVM Hosts (17 máy chủ)</div>
+          <div class="vis-layer-desc">Chạy VM qua libvirt / QEMU-KVM</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Các thành phần chính</h3>
+      <ul class="clean">
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>oned</strong> — Daemon chính, quản lý toàn bộ lifecycle VM</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Sunstone</strong> — Web UI để quản lý (tạo VM, xem host, network, ...)</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Scheduler</strong> — Quyết định VM chạy trên host nào (dựa trên tài nguyên trống)</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>XML-RPC API</strong> — API để tương tác qua command line hoặc script</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Datastores</strong> — Nơi lưu image VM (4 datastores, ~15TB)</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Virtual Networks</strong> — Quản lý IP, VLAN, bridge cho VM</li>
+      </ul>
+
+      <div class="hl" style="margin-top: 14px;">
+        <p><strong>Exporter riêng:</strong> Custom Python exporter gọi XML-RPC API mỗi 60 giây để lấy metrics: host state, VM count, CPU/RAM allocation, datastore usage. Chạy như systemd service trên monitoring server.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 5: TẠO & QUẢN LÝ VM -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--accent-glow); color: var(--accent);">&#128187;</div>
+    <div><h2 style="margin-bottom: 2px;">OpenNebula — Tạo & Quản Lý VM</h2><span class="badge badge-accent">VM OPERATIONS</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <h3>Cách 1: Tạo VM qua Sunstone (Web UI)</h3>
+      <div class="card" style="background: var(--accent-light); border-color: rgba(3,105,161,0.2); margin-bottom: 10px;">
+        <ol class="steps">
+          <li>Truy cập Sunstone tại <strong>http://103.142.137.2:9869</strong>, đăng nhập bằng tài khoản admin hoặc user</li>
+          <li>Vào menu <strong>Instances → VMs</strong>, nhấn nút <strong>Create</strong> ở góc trên phải</li>
+          <li>Chọn <strong>Template</strong> phù hợp (Ubuntu, CentOS, Windows...)</li>
+          <li>Điều chỉnh cấu hình nếu cần: số CPU, dung lượng RAM, kích thước Disk</li>
+          <li>Chọn <strong>Virtual Network</strong> — hệ thống tự động cấp IP từ pool</li>
+          <li>Nhấn <strong>Create</strong> — Scheduler tự chọn KVM host phù hợp và khởi động VM</li>
+          <li>VM xuất hiện trong danh sách với trạng thái <strong>RUNNING</strong> sau 30-60 giây</li>
+        </ol>
+      </div>
+
+      <h3>Cách 2: Tạo VM qua CLI</h3>
+      <p class="card-desc" style="margin-bottom: 8px;">SSH vào turbo0201 với user <strong>oneadmin</strong>, dùng lệnh <code>onetemplate instantiate</code> với tham số tên VM, số CPU và RAM. Có thể tạo nhiều VM cùng lúc hoặc theo batch.</p>
+
+      <div class="hl green">
+        <p><strong>Tự động giám sát:</strong> Khi VM được tạo, libvirt_exporter trên KVM host tự detect và expose metrics. Không cần cấu hình thêm gì trong Prometheus.</p>
+      </div>
+    </div>
+
+    <div>
+      <h3>Bảng thao tác VM thường dùng</h3>
+      <div class="table-wrap" style="margin-bottom: 14px;">
+        <table>
+          <thead><tr><th>Thao tác</th><th>Cách thực hiện (Sunstone)</th><th>Kết quả</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Tạo VM</strong></td><td>Instances → VMs → Create → chọn template</td><td>VM boot trên host được chọn</td></tr>
+            <tr><td><strong>Xóa VM</strong></td><td>Chọn VM → nút Terminate (biểu tượng thùng rác)</td><td>VM bị xóa vĩnh viễn, disk được giải phóng</td></tr>
+            <tr><td><strong>Khởi động lại</strong></td><td>Chọn VM → Reboot (hoặc Reboot Hard)</td><td>VM restart, giữ nguyên IP và dữ liệu</td></tr>
+            <tr><td><strong>Tạm dừng</strong></td><td>Chọn VM → Suspend</td><td>VM đóng băng, giải phóng CPU nhưng giữ RAM</td></tr>
+            <tr><td><strong>Snapshot disk</strong></td><td>Chọn VM → Storage tab → Disk Snapshot</td><td>Ảnh chụp disk tại thời điểm đó</td></tr>
+            <tr><td><strong>Resize CPU/RAM</strong></td><td>Tắt VM → Capacity tab → điều chỉnh → bật lại</td><td>VM có cấu hình mới sau khi boot</td></tr>
+            <tr><td><strong>Live Migration</strong></td><td>Chọn VM → Migrate → chọn host đích</td><td>VM chuyển host không downtime</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Quy trình hỗ trợ khách hàng</h3>
+      <div class="card" style="border-color: var(--green-border); background: var(--green-light); padding: 14px;">
+        <div class="card-title" style="color: var(--green);">Khách yêu cầu tạo VM mới</div>
+        <ol class="steps green" style="font-size: 12px;">
+          <li>Xác nhận cấu hình (CPU, RAM, disk, OS) và tên VM với khách</li>
+          <li>Kiểm tra quota còn đủ trong OpenNebula (Sunstone → Users → Group)</li>
+          <li>Tạo VM theo quy trình Sunstone ở trên</li>
+          <li>Gửi IP và thông tin đăng nhập cho khách</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 6: KVM & ẢO HÓA -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--green-bg); color: var(--green);">&#9881;</div>
+    <div><h2 style="margin-bottom: 2px;">KVM & Ảo Hóa</h2><span class="badge badge-green">VIRTUALIZATION</span></div>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 16px;">KVM (Kernel-based Virtual Machine) là hypervisor tích hợp trong Linux kernel. Mỗi VM là một process QEMU-KVM với hardware virtualization (VT-x/VT-d).</p>
+
+  <div class="card" style="margin-bottom: 16px; border-color: var(--green-border); background: var(--green-light);">
+    <div style="display: flex; gap: 20px; align-items: flex-start;">
+      <div style="flex: 1;">
+        <h3 style="color: var(--green); margin-bottom: 8px;">KVM là gì?</h3>
+        <ul class="clean" style="font-size: 12px;">
+          <li><span class="li-icon" style="color:var(--green);">&#9654;</span> <strong>Type-1 Hypervisor</strong> — KVM biến Linux kernel thành bare-metal hypervisor. Không có lớp phần mềm trung gian giữa VM và phần cứng.</li>
+          <li><span class="li-icon" style="color:var(--green);">&#9654;</span> <strong>Hardware-assisted</strong> — Dùng CPU extensions VT-x (Intel) / AMD-V (AMD) để chạy VM với hiệu suất gần native.</li>
+          <li><span class="li-icon" style="color:var(--green);">&#9654;</span> <strong>QEMU + KVM</strong> — QEMU giả lập thiết bị (disk, NIC, USB). KVM cung cấp CPU/RAM virtualization qua kernel. Hai thứ kết hợp = một process cho mỗi VM.</li>
+          <li><span class="li-icon" style="color:var(--green);">&#9654;</span> <strong>VirtIO drivers</strong> — VM dùng VirtIO drivers để đạt hiệu suất disk/network tốt hơn nhiều (gần native I/O).</li>
+          <li><span class="li-icon" style="color:var(--green);">&#9654;</span> <strong>Ai dùng KVM?</strong> — Google Cloud, DigitalOcean, IBM Cloud, Red Hat OpenShift đều chạy trên KVM.</li>
+        </ul>
+      </div>
+      <div style="flex: 1;">
+        <h3 style="color: var(--green); margin-bottom: 8px;">KVM vs. các hypervisor khác</h3>
+        <div class="table-wrap" style="margin-bottom: 0;">
+          <table>
+            <thead><tr><th>Hypervisor</th><th>Loại</th><th>OS</th><th>Dùng cho</th></tr></thead>
+            <tbody>
+              <tr><td><strong style="color:var(--green);">KVM</strong></td><td>Type-1</td><td>Linux</td><td>Cloud, Server</td></tr>
+              <tr><td>VMware ESXi</td><td>Type-1</td><td>VMware</td><td>Enterprise</td></tr>
+              <tr><td>Hyper-V</td><td>Type-1</td><td>Windows</td><td>Windows Server</td></tr>
+              <tr><td>VirtualBox</td><td>Type-2</td><td>Any</td><td>Dev/test</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="hl green" style="margin-top: 10px;">
+          <p><strong>libvirt</strong> là lớp API quản lý thống nhất cho KVM, QEMU, Xen. Tất cả công cụ quản lý (virsh, virt-manager, OpenNebula) đều giao tiếp qua libvirt socket.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-2">
+    <div>
+      <h3>KVM hoạt động thế nào?</h3>
+      <div class="vis-diagram">
+        <div class="vis-layer" style="background: var(--bg2); border-color: var(--border); margin-bottom: 4px;">
+          <div class="vis-layer-title" style="color: var(--text3); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;">USER SPACE</div>
+          <div class="vis-row" style="margin-top: 6px; margin-bottom: 0;">
+            <div class="vis-box" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); color: var(--accent); flex:1; text-align:center;">VM 1 (Ubuntu)<br><span style="font-size:10px; color:var(--text2);">qemu-kvm</span></div>
+            <div class="vis-box" style="background: var(--green-light); border-color: var(--green-border); color: var(--green); flex:1; text-align:center;">VM 2 (CentOS)<br><span style="font-size:10px; color:var(--text2);">qemu-kvm</span></div>
+            <div class="vis-box" style="background: var(--orange-light); border-color: var(--orange-border); color: var(--orange); flex:1; text-align:center;">VM 3 (Windows)<br><span style="font-size:10px; color:var(--text2);">qemu-kvm</span></div>
+          </div>
+        </div>
+        <div class="vis-arrow">↕</div>
+        <div class="vis-layer" style="background: var(--purple-light); border-color: var(--purple-border); margin: 4px 0; text-align:center;">
+          <div class="vis-layer-title" style="color: var(--purple);">libvirt — Management API</div>
+          <div class="vis-layer-desc">virsh · virt-manager · OpenNebula driver</div>
+        </div>
+        <div class="vis-arrow">↕</div>
+        <div class="vis-layer" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); margin: 4px 0; text-align:center;">
+          <div class="vis-layer-title" style="color: var(--accent);">KVM Module (Linux Kernel)</div>
+          <div class="vis-layer-desc">Hardware-assisted virtualization · VT-x / AMD-V · VT-d IOMMU</div>
+        </div>
+        <div class="vis-arrow">↕</div>
+        <div class="vis-layer" style="background: var(--bg2); border-color: var(--border); text-align:center;">
+          <div class="vis-layer-title" style="color: var(--text);">Physical Hardware</div>
+          <div class="vis-layer-desc">CPU · RAM · Disk · NIC</div>
+        </div>
+      </div>
+
+      <div class="hl" style="margin-top: 10px;">
+        <p><strong>Khác container:</strong> Container (Docker) chia sẻ kernel host. KVM VM có kernel riêng, cách ly hoàn toàn. Mỗi VM được cấp CPU/RAM riêng qua hardware VT-x — không bị ảnh hưởng bởi VM khác.</p>
+      </div>
+    </div>
+
+    <div>
+      <h3>Thao tác quản lý KVM thường dùng</h3>
+      <div class="table-wrap" style="margin-bottom: 12px;">
+        <table>
+          <thead><tr><th>Thao tác</th><th>Mô tả</th><th>Khi nào dùng</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Xem danh sách VM</strong></td><td>Liệt kê tất cả VM trên host (đang chạy và đã tắt)</td><td>Kiểm tra nhanh trạng thái host</td></tr>
+            <tr><td><strong>Xem thông tin VM</strong></td><td>Chi tiết cấu hình VM: CPU, RAM, disk, network interfaces</td><td>Debug VM có vấn đề</td></tr>
+            <tr><td><strong>Restart VM</strong></td><td>Khởi động lại VM qua libvirt (graceful hoặc force)</td><td>VM bị treo, không phản hồi</td></tr>
+            <tr><td><strong>Xem resource usage</strong></td><td>Monitor CPU/RAM theo thời gian thực của từng VM</td><td>Phân tích hiệu suất VM</td></tr>
+            <tr><td><strong>Live Migrate</strong></td><td>Chuyển VM sang host khác không downtime</td><td>Bảo trì host, cân bằng tải</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="hl orange">
+        <p><strong>Quan trọng:</strong> Trên hệ thống production, luôn dùng <strong>OpenNebula CLI/UI</strong> để quản lý VM. Chỉ dùng libvirt trực tiếp khi debug khẩn cấp và OpenNebula không phản hồi.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 7: PROMETHEUS & EXPORTERS -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--purple-bg); color: var(--purple);">&#128200;</div>
+    <div><h2 style="margin-bottom: 2px;">Prometheus & Exporters</h2><span class="badge badge-purple">MONITORING CORE</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <div class="card" style="border-color: var(--purple-border); background: var(--purple-light); margin-bottom: 12px;">
+        <h3 style="color: var(--purple); margin-bottom: 8px;">Prometheus là gì?</h3>
+        <p style="font-size: 13px; color: var(--text2); line-height: 1.6;">Prometheus là <strong style="color:var(--text);">time-series database</strong> dùng mô hình <strong style="color:var(--text);">Pull</strong>: nó chủ động kết nối đến từng exporter theo lịch (mặc định mỗi 15 giây), kéo về toàn bộ metrics, và lưu vào bộ lưu trữ nội bộ (TSDB). Dữ liệu được giữ <strong style="color:var(--text);">90 ngày</strong>, giới hạn 50GB.</p>
+        <ul class="clean" style="font-size: 12px; margin-top: 10px;">
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>Scrape interval:</strong> 15 giây cho node/libvirt exporter, 30 giây cho SNMP</li>
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>Alert rules:</strong> đánh giá mỗi 15 giây, gửi alert khi điều kiện đúng liên tục trong thời gian "for"</li>
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>Khoảng 22 scrape jobs</strong> tạo ra hơn 100,000 time series</li>
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>Config tại:</strong> <span class="path">/opt/monitoring/prometheus/prometheus.yml</span></li>
+        </ul>
+      </div>
+
+      <h3>Khi nào cần can thiệp?</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tình trạng</th><th>Ngưỡng cảnh báo</th><th>Hành động</th></tr></thead>
+          <tbody>
+            <tr><td>CPU cao</td><td>Idle &lt; 15% trong 10 phút</td><td>Kiểm tra process nào ngốn CPU</td></tr>
+            <tr><td>RAM cao</td><td>Dùng &gt; 92% trong 5 phút</td><td>Kiểm tra VM nào dùng nhiều RAM</td></tr>
+            <tr><td>Disk gần đầy</td><td>Free &lt; 10% trong 5 phút</td><td>Dọn log, mở rộng disk</td></tr>
+            <tr><td>Host down</td><td>Exporter không respond trong 1 phút</td><td>SSH kiểm tra host ngay</td></tr>
+            <tr><td>VM không chạy</td><td>State ≠ RUNNING trong 2 phút</td><td>Kiểm tra VM trong OpenNebula</td></tr>
+            <tr><td>Network flood</td><td>Inbound &gt; 2 Gbps trong 1 phút</td><td>Kiểm tra DDoS / traffic bất thường</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h3>Danh sách Exporter</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Exporter</th><th>Port</th><th>Metrics thu được</th><th>Cài ở đâu</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>node_exporter</strong></td>
+              <td><span class="port">9100</span></td>
+              <td>CPU, RAM, disk I/O, network bytes, filesystem, load average</td>
+              <td>Mỗi KVM host</td>
+            </tr>
+            <tr>
+              <td><strong>libvirt_exporter</strong></td>
+              <td><span class="port">9177</span></td>
+              <td>VM state, CPU time, memory allocated, block read/write, net in/out per VM</td>
+              <td>Mỗi KVM host</td>
+            </tr>
+            <tr>
+              <td><strong>snmp_exporter</strong></td>
+              <td><span class="port">9116</span></td>
+              <td>Port status, bandwidth in/out, interface errors, packet drops</td>
+              <td>Monitoring server (Docker)</td>
+            </tr>
+            <tr>
+              <td><strong>OpenNebula exporter</strong></td>
+              <td><span class="port">9621</span></td>
+              <td>Host state, VM count, CPU/RAM allocation, datastore capacity</td>
+              <td>Monitoring server (systemd)</td>
+            </tr>
+            <tr>
+              <td><strong>Ceph MGR</strong></td>
+              <td><span class="port">9283</span></td>
+              <td>Cluster health, pool bytes, OSD status, MON quorum, PG states</td>
+              <td>turbo0201, 0202, 0203</td>
+            </tr>
+            <tr>
+              <td><strong>CrowdSec exporter</strong></td>
+              <td><span class="port">9710</span></td>
+              <td>Active decisions, alerts count, bucket overflows, parser requests</td>
+              <td>Monitoring server (systemd)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="hl" style="margin-top: 12px;">
+        <p><strong>Sau khi sửa config Prometheus:</strong> Không cần restart container. Gọi API reload (<code>POST /-/reload</code>) để áp dụng config mới ngay lập tức mà không mất dữ liệu.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 8: GRAFANA & DASHBOARDS -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--green-bg); color: var(--green);">&#128202;</div>
+    <div><h2 style="margin-bottom: 2px;">Grafana & Dashboards</h2><span class="badge badge-green">VISUALIZATION</span></div>
+  </div>
+
+  <div class="card" style="border-color: var(--green-border); background: var(--green-light); margin-bottom: 14px;">
+    <h3 style="color: var(--green); margin-bottom: 6px;">Grafana là gì?</h3>
+    <p style="font-size: 13px; color: var(--text2); line-height: 1.6;">Grafana là công cụ <strong style="color:var(--text);">visualization</strong> — nó không lưu dữ liệu mà truy vấn từ Prometheus để vẽ đồ thị. Truy cập tại <strong>http://103.142.137.6:3000</strong>. Khi một panel hiển thị "No Data", đó thường là vấn đề của datasource UID hoặc biến template, không phải Prometheus mất dữ liệu.</p>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <h3>8 Dashboard đang hoạt động</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Dashboard</th><th>Mục đích</th><th>Khi nào xem</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Node Exporter Full</strong></td><td>CPU, RAM, disk, network cho từng host</td><td>Khi host bị alert hoặc chậm</td></tr>
+            <tr><td><strong>Libvirt VM Overview</strong></td><td>VM state, CPU, memory, disk/net I/O</td><td>Khi VM bị báo lỗi, kiểm tra hiệu năng VM</td></tr>
+            <tr><td><strong>Prometheus Overview</strong></td><td>Tự giám sát Prometheus (scrape health)</td><td>Khi nghi Prometheus có vấn đề</td></tr>
+            <tr><td><strong>Alertmanager</strong></td><td>Timeline alert firing và resolved</td><td>Review lịch sử cảnh báo</td></tr>
+            <tr><td><strong>SNMP Interface</strong></td><td>Traffic từng cổng switch in/out</td><td>Kiểm tra băng thông cụ thể</td></tr>
+            <tr><td><strong>SNMP Device</strong></td><td>Tổng quan switch, bandwidth, errors</td><td>Hàng ngày kiểm tra mạng</td></tr>
+            <tr><td><strong>OpenNebula Cloud</strong></td><td>Host allocation, VM count, datastores</td><td>Kiểm tra tài nguyên cloud</td></tr>
+            <tr><td><strong>Wazuh Security</strong></td><td>Events, agents, top rules, MITRE ATT&CK</td><td>Review bảo mật hàng ngày</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h3>Quy trình kiểm tra dashboard hàng ngày</h3>
+      <div class="card" style="border-color: var(--green-border);">
+        <ol class="steps green">
+          <li>Mở Grafana tại <strong>http://103.142.137.6:3000</strong></li>
+          <li>Mở <strong>Node Exporter Full</strong> — chọn từng host, xem CPU và RAM trong 24h qua. Chú ý nếu có spike bất thường</li>
+          <li>Mở <strong>Libvirt VM Overview</strong> — kiểm tra có VM nào ở trạng thái không phải RUNNING không</li>
+          <li>Mở <strong>SNMP Device</strong> — kiểm tra băng thông switch, xem có port nào bị lỗi không</li>
+          <li>Mở <strong>Wazuh Security</strong> — xem tổng số events hôm nay, kiểm tra có rule nào bất thường cao không</li>
+          <li>Mở <strong>OpenNebula Cloud</strong> — kiểm tra tỷ lệ sử dụng tài nguyên (CPU allocation, datastore usage)</li>
+          <li>Kiểm tra tab <strong>Alertmanager</strong> — xem alert nào đang firing, có alert nào mới từ đêm qua không</li>
+          <li>Nếu thấy bất thường, ghi chép lại thời điểm và chuyển sang điều tra ngay</li>
+        </ol>
+      </div>
+
+      <div class="hl" style="margin-top: 10px;">
+        <p><strong>Truy cập nhanh:</strong> Grafana tại <code>:3000</code>. Nếu dashboard hiện "No Data", kiểm tra <strong>Settings → Data Sources → Prometheus</strong> xem UID có đúng không.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 9: ALERTMANAGER & CẢNH BÁO -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--orange-bg); color: var(--orange);">&#128276;</div>
+    <div><h2 style="margin-bottom: 2px;">Alertmanager & Cảnh Báo</h2><span class="badge badge-orange">ALERTING</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <h3>Luồng xử lý alert</h3>
+      <div class="vis-diagram">
+        <div class="vis-box" style="background: var(--purple-light); border-color: var(--purple-border); color: var(--purple); text-align:center; margin-bottom:4px;">
+          <strong>Prometheus</strong> — đánh giá rules mỗi 15s
+        </div>
+        <div class="vis-arrow">↓ điều kiện đúng trong "for" duration</div>
+        <div class="vis-box" style="background: var(--orange-light); border-color: var(--orange-border); color: var(--orange); text-align:center; margin: 4px 0;">
+          <strong>Alert FIRING</strong> → gửi đến Alertmanager :9093
+        </div>
+        <div class="vis-arrow">↓ route matching (severity)</div>
+        <div class="vis-box" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); color: var(--accent); text-align:center; margin: 4px 0;">
+          <strong>Alertmanager</strong> — gom nhóm (group_by), chờ 30s
+        </div>
+        <div class="vis-arrow">↓</div>
+        <div class="vis-row" style="margin-top: 4px;">
+          <div class="vis-box" style="background: var(--green-light); border-color: var(--green-border); color: var(--green); flex:1; text-align:center;">
+            severity: <strong>warning</strong><br>→ Telegram (repeat 4h)
+          </div>
+          <div class="vis-box" style="background: var(--red-light); border-color: var(--red-border); color: var(--red); flex:1; text-align:center;">
+            severity: <strong>critical</strong><br>→ Telegram (repeat 1h)
+          </div>
+        </div>
+        <div class="vis-arrow">↓</div>
+        <div class="vis-box" style="background: var(--green-light); border-color: var(--green-border); color: var(--green); text-align:center; margin-top:4px;">
+          <strong>EcoCloud_alerting</strong> — Telegram Bot → Chat ID
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 12px;">
+        <div class="card-title">Quy trình khi nhận alert Telegram</div>
+        <ol class="steps orange" style="font-size: 12px;">
+          <li>Đọc tên alert và instance bị ảnh hưởng trong tin nhắn Telegram</li>
+          <li>Mở Grafana dashboard tương ứng để xem chi tiết (Node Exporter nếu là host alert)</li>
+          <li>SSH vào host bị ảnh hưởng để kiểm tra trực tiếp</li>
+          <li>Xử lý theo bảng hướng dẫn ở Slide 18 (Xử lý sự cố)</li>
+          <li>Sau khi xử lý, alert tự RESOLVED — xác nhận trong Alertmanager tại <code>:9093</code></li>
+        </ol>
+      </div>
+    </div>
+
+    <div>
+      <h3>16 Alert Rules — Bảng tham chiếu</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Alert</th><th>Ngưỡng</th><th>Mức độ</th><th>Hành động khi nhận</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--red);"><strong>HostDown</strong></td><td>up == 0 trong 1m</td><td><span class="badge badge-red">critical</span></td><td>SSH kiểm tra host ngay, check network</td></tr>
+            <tr><td><strong>HostHighCPU</strong></td><td>CPU idle &lt; 15% trong 10m</td><td><span class="badge badge-orange">warning</span></td><td>Xem process nào ngốn CPU trên host</td></tr>
+            <tr><td style="color:var(--red);"><strong>HostMemoryCritical</strong></td><td>RAM &gt; 92% trong 5m</td><td><span class="badge badge-red">critical</span></td><td>Xem VM nào dùng RAM cao, cân nhắc migrate</td></tr>
+            <tr><td style="color:var(--red);"><strong>HostDiskCritical</strong></td><td>Free &lt; 10% trong 5m</td><td><span class="badge badge-red">critical</span></td><td>Dọn log, xem disk nào đầy</td></tr>
+            <tr><td><strong>HostHighLoad</strong></td><td>Load &gt; CPU count * 2</td><td><span class="badge badge-orange">warning</span></td><td>Kiểm tra process load cao</td></tr>
+            <tr><td style="color:var(--red);"><strong>VMNotRunning</strong></td><td>state ≠ 1 trong 2m</td><td><span class="badge badge-red">critical</span></td><td>Kiểm tra VM trong OpenNebula, khởi động lại</td></tr>
+            <tr><td><strong>VMHighCPU</strong></td><td>CPU &gt; 90% trong 10m</td><td><span class="badge badge-orange">warning</span></td><td>Thông báo khách, xem có thể scale không</td></tr>
+            <tr><td><strong>HostHighMemory</strong></td><td>RAM &gt; 85% trong 10m</td><td><span class="badge badge-orange">warning</span></td><td>Theo dõi tiếp, chuẩn bị add RAM hoặc migrate VM</td></tr>
+            <tr><td style="color:var(--red);"><strong>HostInboundFlood</strong></td><td>&gt; 2 Gbps trong 1m</td><td><span class="badge badge-red">critical</span></td><td>Kiểm tra ntopng, nghi DDoS — báo ngay</td></tr>
+            <tr><td style="color:var(--red);"><strong>SwitchDown</strong></td><td>SNMP unreachable 1m</td><td><span class="badge badge-red">critical</span></td><td>Ping switch, kiểm tra SNMP community</td></tr>
+            <tr><td><strong>SwitchHighTraffic</strong></td><td>Port &gt; 800 Mbps trong 5m</td><td><span class="badge badge-orange">warning</span></td><td>Xem port nào bị nghi traffic bất thường</td></tr>
+            <tr><td style="color:var(--red);"><strong>CephUnhealthy</strong></td><td>health_status &gt; 0 trong 5m</td><td><span class="badge badge-red">critical</span></td><td>Kiểm tra Ceph status, xem OSD nào lỗi</td></tr>
+            <tr><td><strong>CephNearFull</strong></td><td>Dùng &gt; 80% capacity</td><td><span class="badge badge-orange">warning</span></td><td>Lên kế hoạch mở rộng storage</td></tr>
+            <tr><td style="color:var(--red);"><strong>OneHostDown</strong></td><td>Host state ≠ MONITORED</td><td><span class="badge badge-red">critical</span></td><td>Kiểm tra host trong OpenNebula</td></tr>
+            <tr><td><strong>PrometheusTargetDown</strong></td><td>Exporter unreachable 5m</td><td><span class="badge badge-orange">warning</span></td><td>Kiểm tra service exporter trên host</td></tr>
+            <tr><td><strong>CrowdSecHighAlerts</strong></td><td>&gt; 100 alerts/phút</td><td><span class="badge badge-orange">warning</span></td><td>Xem IP nào đang tấn công trong cscli</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 10: WAZUH SIEM -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--orange-bg); color: var(--orange);">&#128737;</div>
+    <div><h2 style="margin-bottom: 2px;">Wazuh SIEM</h2><span class="badge badge-orange">SECURITY</span></div>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 14px;">Wazuh 4.11 thu thập log từ tất cả host, phân tích realtime, phát hiện xâm nhập và kiểm tra tuân thủ. Chạy Docker stack trên monitoring server.</p>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <h3>Kiến trúc</h3>
+      <div class="vis-diagram">
+        <div class="vis-box" style="background: var(--orange-light); border-color: var(--orange-border); color: var(--orange); margin-bottom:4px;">
+          <strong>Wazuh Manager</strong> <span class="port" style="font-size:10px;">:1514 TCP</span><br>
+          <span style="font-size:11px; color:var(--text2);">← 17 agents · ← Juniper syslog :514 · → rules analysis</span>
+        </div>
+        <div class="vis-arrow">↓</div>
+        <div class="vis-box" style="background: var(--blue-light); border-color: var(--blue-border); color: var(--blue); margin: 4px 0;">
+          <strong>Wazuh Indexer</strong> (OpenSearch) <span class="port" style="font-size:10px;">:9200</span><br>
+          <span style="font-size:11px; color:var(--text2);">Lưu trữ 196K+ events · Full-text searchable index</span>
+        </div>
+        <div class="vis-arrow">↓</div>
+        <div class="vis-box" style="background: var(--green-light); border-color: var(--green-border); color: var(--green); margin-top: 4px;">
+          <strong>Wazuh Dashboard</strong> <span class="port" style="font-size:10px;">:443</span><br>
+          <span style="font-size:11px; color:var(--text2);">Web UI phân tích · MITRE ATT&amp;CK mapping · Agent management</span>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 14px;">Quy trình khi Wazuh phát hiện sự kiện bảo mật</h3>
+      <div class="card" style="border-color: var(--orange-border);">
+        <ol class="steps orange" style="font-size: 12px;">
+          <li>Đăng nhập Wazuh Dashboard tại <strong>https://103.142.137.6:443</strong></li>
+          <li>Vào module <strong>Security Events</strong> — lọc theo thời gian và agent bị ảnh hưởng</li>
+          <li>Đọc rule ID và description — tra bảng custom rules để hiểu loại sự kiện</li>
+          <li>Kiểm tra <strong>MITRE ATT&CK</strong> mapping để hiểu kỹ thuật tấn công nghi ngờ</li>
+          <li>SSH vào host liên quan để xác minh thực tế</li>
+          <li>Nếu là false positive: tạo rule tuning (100500+) để giảm noise</li>
+          <li>Nếu là sự cố thật: follow quy trình leo thang bảo mật</li>
+        </ol>
+      </div>
+    </div>
+
+    <div>
+      <h3>Tính năng Agent (trên mỗi KVM host)</h3>
+      <div class="table-wrap" style="margin-bottom: 12px;">
+        <table>
+          <thead><tr><th>Tính năng</th><th>Mô tả</th><th>Ví dụ phát hiện</th></tr></thead>
+          <tbody>
+            <tr><td><strong>FIM</strong><br><span style="font-size:10px; color:var(--text3);">File Integrity Monitoring</span></td><td>Theo dõi thay đổi file hệ thống</td><td>/etc/passwd bị sửa, binary bị thay thế</td></tr>
+            <tr><td><strong>Log Analysis</strong></td><td>Parse và phân tích log realtime</td><td>SSH brute force, sudo abuse, login lạ</td></tr>
+            <tr><td><strong>Rootcheck</strong></td><td>Phát hiện rootkit và backdoor</td><td>Hidden process, modified kernel module</td></tr>
+            <tr><td><strong>SCA</strong><br><span style="font-size:10px; color:var(--text3);">Security Config Assessment</span></td><td>Kiểm tra cấu hình theo CIS Benchmarks</td><td>SSH root login enabled, weak password policy</td></tr>
+            <tr><td><strong>Vulnerability Detection</strong></td><td>Quét CVE so với packages đã cài</td><td>Package có CVE critical chưa patch</td></tr>
+            <tr><td><strong>Audit Log</strong></td><td>Theo dõi syscall và hành động user</td><td>Xóa file, đổi quyền, chạy lệnh nguy hiểm</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Custom Rules đã cấu hình</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Rule IDs</th><th>Loại</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td>100100–100107</td><td>Juniper EX4500</td><td>Login, config change, interface down, SNMP auth fail</td></tr>
+            <tr><td>100200–100204</td><td>OpenNebula</td><td>API auth fail, VM lifecycle, user/network changes</td></tr>
+            <tr><td>100300–100350</td><td>Tấn công nâng cao</td><td>Lateral movement, persistence, data exfil, crypto mining</td></tr>
+            <tr><td>100400+</td><td>YARA Malware</td><td>Phát hiện malware qua YARA scan kết quả</td></tr>
+            <tr><td>100500+</td><td>Tuning</td><td>Loại bỏ false positive đã biết</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 11: CROWDSEC & YARA -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--blue-bg); color: var(--blue);">&#128270;</div>
+    <div><h2 style="margin-bottom: 2px;">CrowdSec & YARA</h2><span class="badge badge-blue">IDS + MALWARE</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <div class="card" style="border-color: var(--blue-border); background: var(--blue-light); margin-bottom: 12px;">
+        <h3 style="color: var(--blue); margin-bottom: 8px;">CrowdSec là gì?</h3>
+        <p style="font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 8px;">CrowdSec là hệ thống <strong style="color:var(--text);">phát hiện hành vi tấn công</strong> dựa trên cộng đồng. Nó phân tích log (auth.log, audit.log, syslog) để nhận diện các pattern như SSH brute force, port scan, exploit attempts. Hiện tại đang ở chế độ <strong style="color:var(--red);">DETECT-ONLY</strong> — chỉ phát hiện, không tự block.</p>
+        <ul class="clean" style="font-size: 12px;">
+          <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> <strong>18 agents</strong> (17 KVM hosts + monitoring server)</li>
+          <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> <strong>Central LAPI</strong> tại monitoring server tổng hợp alerts</li>
+          <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> <strong>Bouncer tắt</strong> — Phase 5 sẽ bật sau quan sát đủ</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-color: var(--purple-border); background: var(--purple-light); margin-bottom: 12px;">
+        <h3 style="color: var(--purple); margin-bottom: 8px;">YARA là gì?</h3>
+        <p style="font-size: 13px; color: var(--text2); line-height: 1.6;">YARA là công cụ <strong style="color:var(--text);">nhận dạng malware</strong> dựa trên pattern matching. Nó so sánh file với 523 rule files để phát hiện malware, ransomware, trojan. Chế độ <strong style="color:var(--text);">scan-only</strong> — không tự xóa hay quarantine.</p>
+      </div>
+
+      <h3>Quy trình khi phát hiện IP tấn công</h3>
+      <div class="card" style="border-color: var(--blue-border);">
+        <ol class="steps" style="font-size: 12px;">
+          <li>Xem alert CrowdSec trong Grafana dashboard hoặc Telegram</li>
+          <li>Kiểm tra IP đang tấn công: xem loại tấn công và số lần trong CrowdSec dashboard</li>
+          <li>Xác định IP đó là external hay internal (nếu internal — có thể là host bị compromise)</li>
+          <li>Nếu là false positive (IP nội bộ hợp lệ): thêm vào whitelist</li>
+          <li>Nếu là tấn công thật: ghi nhận IP, thông báo team, xem xét block thủ công qua firewall</li>
+          <li>Theo dõi tiếp trong 24h để xác nhận tấn công đã dừng</li>
+        </ol>
+      </div>
+    </div>
+
+    <div>
+      <h3>Bảng xử lý theo loại tấn công</h3>
+      <div class="table-wrap" style="margin-bottom: 12px;">
+        <table>
+          <thead><tr><th>Loại tấn công</th><th>Cách phát hiện</th><th>Cách xử lý</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SSH Brute Force</strong></td><td>CrowdSec: &gt;10 login fail từ 1 IP trong 5 phút</td><td>Block IP thủ công qua UFW; kiểm tra có account nào bị compromise</td></tr>
+            <tr><td><strong>Port Scan</strong></td><td>CrowdSec: nhiều port SYN từ 1 IP</td><td>Block IP; xem log để biết mục tiêu; kiểm tra firewall rules</td></tr>
+            <tr><td><strong>Web Exploit</strong></td><td>CrowdSec: pattern exploit trong HTTP logs</td><td>Block IP; kiểm tra web server logs; vá lỗ hổng nếu có</td></tr>
+            <tr><td><strong>Malware phát hiện</strong></td><td>YARA match → Wazuh alert rule 100400+</td><td>Quarantine file thủ công; phân tích file; nếu cần — tắt VM và điều tra</td></tr>
+            <tr><td><strong>Lateral Movement</strong></td><td>Wazuh rule 100300+: đăng nhập bất thường giữa hosts</td><td>Tắt account bị compromise; kiểm tra tất cả hosts; review SSH keys</td></tr>
+            <tr><td><strong>Crypto Mining</strong></td><td>CPU spike + Wazuh detect process lạ</td><td>Kill process; tìm và xóa binary; kiểm tra cron/service độc hại</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="vis-diagram">
+        <div class="vis-box" style="background: var(--blue-light); border-color: var(--blue-border); color: var(--blue); margin-bottom:4px;">
+          <strong>18 CrowdSec Agents</strong> (17 KVM hosts + monitoring server)<br>
+          <span style="font-size:11px; color:var(--text2);">Parse: auth.log, audit.log, syslog</span>
+        </div>
+        <div class="vis-arrow">↓ gửi alerts</div>
+        <div class="vis-box" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); color: var(--accent); margin: 4px 0;">
+          <strong>Central LAPI</strong> <span class="port" style="font-size:10px;">:8180</span> — tổng hợp alerts
+        </div>
+        <div class="vis-arrow">↓</div>
+        <div class="vis-row" style="margin-top:4px;">
+          <div class="vis-box" style="background: var(--purple-light); border-color: var(--purple-border); color: var(--purple); flex:1; text-align:center;">Prometheus<br><span style="font-size:10px;">metrics :9710</span></div>
+          <div class="vis-box" style="background: var(--green-light); border-color: var(--green-border); color: var(--green); flex:1; text-align:center;">Grafana<br><span style="font-size:10px;">dashboard</span></div>
+          <div class="vis-box" style="background: var(--red-light); border-color: var(--red-border); color: var(--red); flex:1; text-align:center;">Bouncers<br><span style="font-size:10px; font-weight:700;">TẮT (detect-only)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 12: CEPH STORAGE -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--purple-bg); color: var(--purple);">&#128451;</div>
+    <div><h2 style="margin-bottom: 2px;">Ceph Storage</h2><span class="badge badge-purple">DISTRIBUTED STORAGE</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <div class="card" style="border-color: var(--purple-border); background: var(--purple-light); margin-bottom: 12px;">
+        <h3 style="color: var(--purple); margin-bottom: 8px;">Ceph hoạt động thế nào?</h3>
+        <ul class="clean" style="font-size: 12px;">
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>3x Replication:</strong> Mỗi block dữ liệu được ghi lên 3 OSD khác nhau. Mất 1 disk → không mất data</li>
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>CRUSH Algorithm:</strong> Client tự tính toán vị trí data (không qua server trung gian), giảm bottleneck</li>
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>Self-healing:</strong> Khi OSD chết, Ceph tự phân phối lại data lên OSD khác (backfill)</li>
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>MON Quorum:</strong> Cần ít nhất 2/3 MON nodes hoạt động để cluster tiếp tục nhận I/O</li>
+          <li><span class="li-icon" style="color:var(--purple);">&#9654;</span> <strong>Podman (quan trọng!):</strong> Ceph hosts dùng podman, không phải docker. Lệnh docker sẽ không hoạt động</li>
+        </ul>
+      </div>
+
+      <h3>Kiến trúc Ceph</h3>
+      <div class="vis-diagram">
+        <div class="vis-box" style="background: var(--purple-light); border-color: var(--purple-border); color: var(--purple); text-align:center; margin-bottom:4px;">
+          <strong>CLIENT</strong> (VM muốn ghi data)<br>
+          <span style="font-size:10px; color:var(--text2);">CRUSH algorithm tính toán vị trí data</span>
+        </div>
+        <div class="vis-arrow">↓</div>
+        <div class="vis-box" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); color: var(--accent); margin: 4px 0;">
+          <strong>MON — Monitor</strong> · Quorum 3 nodes · Giữ cluster map
+        </div>
+        <div class="vis-arrow">↓ ghi vào PG (Placement Group)</div>
+        <div class="vis-box" style="background: var(--green-light); border-color: var(--green-border); color: var(--green); margin: 4px 0;">
+          <strong>OSD</strong> · Mỗi disk = 1 daemon · 3 bản sao trên 3 OSD khác nhau
+        </div>
+        <div class="vis-arrow">↓</div>
+        <div class="vis-box" style="background: var(--orange-light); border-color: var(--orange-border); color: var(--orange); margin-top: 4px;">
+          <strong>MGR — Manager</strong> · Dashboard · Prometheus <span class="port" style="font-size:10px;">:9283</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>2 Ceph Clusters</h3>
+      <div class="table-wrap" style="margin-bottom: 14px;">
+        <table>
+          <thead><tr><th>Cluster</th><th>MON Nodes</th><th>MGR Active</th><th>Pool chính</th></tr></thead>
+          <tbody>
+            <tr><td><strong>ceph-turbo</strong></td><td>turbo0201, 0202, 0203</td><td>turbo0201 hoặc 0202</td><td>VM disk images Cluster 1</td></tr>
+            <tr><td><strong>ceph-turbo2</strong></td><td>turbo0207, 0208, 0210</td><td>turbo0207 hoặc 0208</td><td>VM disk images Cluster 2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Quy trình khi disk/OSD lỗi</h3>
+      <div class="card" style="border-color: var(--red-border); margin-bottom: 12px; padding: 14px;">
+        <ol class="steps red" style="font-size: 12px;">
+          <li>Nhận alert CephUnhealthy từ Prometheus/Telegram</li>
+          <li>SSH vào MON node (turbo0201 hoặc 0207), chạy lệnh kiểm tra Ceph status trong container podman</li>
+          <li>Xem OSD nào bị <strong>down</strong> và disk vật lý nào tương ứng</li>
+          <li>Kiểm tra disk vật lý bằng công cụ SMART — xác định disk hỏng hay chỉ bị disconnect</li>
+          <li>Nếu disk hỏng: thay disk mới, Ceph tự backfill (có thể mất 1-4 giờ tùy kích thước)</li>
+          <li>Theo dõi tiến trình recovery qua Grafana dashboard cho đến khi HEALTH_OK</li>
+        </ol>
+      </div>
+
+      <h3>Quy trình cấp thêm storage cho khách</h3>
+      <div class="card" style="border-color: var(--purple-border); padding: 14px;">
+        <ol class="steps" style="font-size: 12px;">
+          <li>Kiểm tra Ceph pool còn đủ dung lượng trống (tối thiểu 20% free)</li>
+          <li>Vào OpenNebula Sunstone — chọn VM khách</li>
+          <li>Tắt VM (Poweroff), vào tab Storage → Disk → Resize hoặc Add new disk</li>
+          <li>Khởi động lại VM, SSH vào VM và mở rộng partition/filesystem</li>
+        </ol>
+      </div>
+
+      <div class="hl purple" style="margin-top: 10px;">
+        <p><strong>Lưu ý:</strong> Standby MGR không expose Prometheus metrics — đây là <strong>hành vi bình thường</strong>. Chỉ Active MGR mới expose. Đừng báo lỗi nếu thấy 1/2 Ceph MGR targets down trong Prometheus.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 13: NETWORK & SFLOW -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--blue-bg); color: var(--blue);">&#127760;</div>
+    <div><h2 style="margin-bottom: 2px;">Network & sFlow</h2><span class="badge badge-blue">NETWORK MONITORING</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <div class="card" style="border-color: var(--blue-border); background: var(--blue-light); margin-bottom: 12px;">
+        <h3 style="color: var(--blue); margin-bottom: 8px;">Cách tiếp cận giám sát mạng</h3>
+        <p style="font-size: 13px; color: var(--text2); line-height: 1.6;">Hệ thống dùng <strong style="color:var(--text);">2 phương pháp bổ sung nhau</strong>: SNMP để lấy bandwidth tổng hợp theo port, và sFlow để phân tích sâu từng flow (ai đang nói chuyện với ai, protocol gì). Kết hợp cả hai cho cái nhìn toàn diện về traffic.</p>
+      </div>
+
+      <h3>Metrics network quan trọng</h3>
+      <div class="table-wrap" style="margin-bottom: 12px;">
+        <table>
+          <thead><tr><th>Metric</th><th>Nguồn</th><th>Mục đích</th></tr></thead>
+          <tbody>
+            <tr><td>Bandwidth mỗi port (in/out Mbps)</td><td>SNMP → snmp_exporter → Prometheus</td><td>Theo dõi tải từng server port switch</td></tr>
+            <tr><td>Port status (up/down)</td><td>SNMP ifOperStatus</td><td>Phát hiện link down ngay lập tức</td></tr>
+            <tr><td>Interface errors & discards</td><td>SNMP ifInErrors, ifOutDiscards</td><td>Phát hiện lỗi cáp, auto-neg sai</td></tr>
+            <tr><td>Top talkers (IP dùng nhiều nhất)</td><td>sFlow → ntopng</td><td>Xác định VM/host ngốn bandwidth</td></tr>
+            <tr><td>Protocol breakdown</td><td>sFlow → ntopng</td><td>Xem tỷ lệ HTTP/HTTPS/SSH/DNS</td></tr>
+            <tr><td>Flow analysis (src → dst)</td><td>sFlow → ntopng</td><td>Trace luồng traffic bất thường</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="vis-diagram">
+        <div class="vis-box" style="background: var(--blue-light); border-color: var(--blue-border); color: var(--blue); text-align:center; margin-bottom:8px;">
+          <strong>Juniper EX4500</strong> — 125.212.255.90
+        </div>
+        <div class="vis-row">
+          <div class="vis-layer" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); flex:1;">
+            <div class="vis-layer-title" style="color:var(--accent);">SNMP v2c :161</div>
+            <div class="vis-layer-desc">Community: TurboMonitor2026<br>→ snmp_exporter :9116<br>→ Prometheus<br>Scrape mỗi 30s</div>
+          </div>
+          <div class="vis-layer" style="background: var(--green-light); border-color: var(--green-border); flex:1;">
+            <div class="vis-layer-title" style="color:var(--green);">sFlow UDP :6343</div>
+            <div class="vis-layer-desc">Sample 1:512 packets<br>→ sflowtool<br>→ ntopng :3001<br>Deep inspection</div>
+          </div>
+          <div class="vis-layer" style="background: var(--orange-light); border-color: var(--orange-border); flex:1;">
+            <div class="vis-layer-title" style="color:var(--orange);">Syslog UDP :514</div>
+            <div class="vis-layer-desc">Events switch<br>→ Wazuh Manager<br>Login, config, errors</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>ntopng — Phân tích traffic chi tiết</h3>
+      <ul class="clean" style="margin-bottom: 12px;">
+        <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> <strong>Web UI:</strong> http://103.142.137.6:3001</li>
+        <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> Phân tích protocol (HTTP/DNS/SSH/...)</li>
+        <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> Top talkers — IP dùng bandwidth nhiều nhất</li>
+        <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> Flow analysis — xem source → destination pairs</li>
+        <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> Geo-location luồng traffic</li>
+        <li><span class="li-icon" style="color:var(--blue);">&#9654;</span> Phát hiện DDoS qua bandwidth spike</li>
+      </ul>
+
+      <h3>Quy trình khi phát hiện traffic bất thường</h3>
+      <div class="card" style="border-color: var(--orange-border);">
+        <ol class="steps orange" style="font-size: 12px;">
+          <li>Nhận alert <strong>HostInboundFlood</strong> hoặc <strong>SwitchHighTraffic</strong> qua Telegram</li>
+          <li>Mở ntopng tại <strong>http://103.142.137.6:3001</strong> để xem top talkers ngay lập tức</li>
+          <li>Xác định nguồn traffic: IP ngoài hay VM/host nội bộ</li>
+          <li>Nếu là DDoS từ ngoài: thông báo team senior, cân nhắc null-route IP tại Juniper</li>
+          <li>Nếu là VM nội bộ bị compromise: cô lập VM đó (disconnect network trong OpenNebula)</li>
+          <li>Kiểm tra Wazuh events trên host/VM liên quan để tìm dấu hiệu xâm nhập</li>
+          <li>Theo dõi traffic trở về mức bình thường sau khi xử lý</li>
+        </ol>
+      </div>
+
+      <div class="hl" style="margin-top: 10px;">
+        <p><strong>Bandwidth bình thường:</strong> Tổng traffic switch thường 50-200 Mbps. Alert khi vượt 2 Gbps inbound. Nếu thấy traffic tăng đột biến mà chưa có alert — kiểm tra ngưỡng alert đã đúng chưa.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 14: DOCKER COMPOSE & KHỞI ĐỘNG -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--accent-glow); color: var(--accent);">&#128230;</div>
+    <div><h2 style="margin-bottom: 2px;">Docker Compose & Khởi Động</h2><span class="badge badge-accent">DEPLOYMENT</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 16px;">
+    <div>
+      <h3>Danh sách containers (Monitoring Stack)</h3>
+      <div class="table-wrap" style="margin-bottom: 12px;">
+        <table>
+          <thead><tr><th>Container</th><th>Image</th><th>Port</th><th>Auto-restart</th><th>Ghi chú</th></tr></thead>
+          <tbody>
+            <tr><td><strong>prometheus</strong></td><td>prom/prometheus:latest</td><td><span class="port">9090</span></td><td><span class="badge badge-green">unless-stopped</span></td><td>Lưu 90 ngày / 50GB</td></tr>
+            <tr><td><strong>grafana</strong></td><td>grafana/grafana-oss:latest</td><td><span class="port">3000</span></td><td><span class="badge badge-green">unless-stopped</span></td><td>Dữ liệu trong named volume</td></tr>
+            <tr><td><strong>alertmanager</strong></td><td>prom/alertmanager:latest</td><td><span class="port">9093</span></td><td><span class="badge badge-green">unless-stopped</span></td><td>Config: alertmanager.yml</td></tr>
+            <tr><td><strong>snmp-exporter</strong></td><td>prom/snmp-exporter:latest</td><td><span class="port">9116</span></td><td><span class="badge badge-green">unless-stopped</span></td><td>Config: snmp.yml Juniper</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Danh sách containers (Wazuh Stack)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Container</th><th>Port</th><th>Auto-restart</th></tr></thead>
+          <tbody>
+            <tr><td><strong>wazuh.manager</strong></td><td><span class="port">1514</span> / <span class="port">1515</span></td><td><span class="badge badge-green">unless-stopped</span></td></tr>
+            <tr><td><strong>wazuh.indexer</strong></td><td><span class="port">9200</span></td><td><span class="badge badge-green">unless-stopped</span></td></tr>
+            <tr><td><strong>wazuh.dashboard</strong></td><td><span class="port">443</span></td><td><span class="badge badge-green">unless-stopped</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h3>Quy trình khởi động lại toàn bộ monitoring</h3>
+      <div class="card" style="border-color: var(--accent-light); margin-bottom: 12px;">
+        <div class="card-title" style="color: var(--accent);">Sau reboot server hoặc sau sự cố</div>
+        <ol class="steps" style="font-size: 12px;">
+          <li>SSH vào monitoring server <strong>103.142.137.6</strong></li>
+          <li>Kiểm tra Docker đang chạy: xem danh sách tất cả containers và trạng thái</li>
+          <li>Vào thư mục <span class="path">/opt/monitoring/</span> và khởi động monitoring stack bằng docker compose</li>
+          <li>Chờ 30 giây, kiểm tra lại tất cả containers đều ở trạng thái <strong>Up</strong></li>
+          <li>Vào thư mục <span class="path">/opt/wazuh/single-node/</span> và khởi động Wazuh stack</li>
+          <li>Wazuh cần 2-3 phút để indexer và dashboard sẵn sàng — chờ đủ thời gian</li>
+          <li>Kiểm tra systemd services: opennebula-exporter, crowdsec-exporter, sflow-ntopng</li>
+          <li>Mở Prometheus tại :9090/targets và xác nhận targets đang scrape bình thường</li>
+        </ol>
+      </div>
+
+      <h3>Quy trình khi một container bị crash</h3>
+      <div class="card" style="border-color: var(--red-border);">
+        <ol class="steps red" style="font-size: 12px;">
+          <li>Xem logs container bị crash để tìm nguyên nhân</li>
+          <li>Nếu lỗi config: sửa file config tương ứng, restart container</li>
+          <li>Nếu lỗi disk đầy: dọn dữ liệu cũ, restart container</li>
+          <li>Nếu lỗi memory: kiểm tra tài nguyên server, restart container</li>
+          <li>Container sẽ tự restart nhờ policy <strong>unless-stopped</strong> — nếu cứ crash loop thì cần xem logs ngay</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="hl orange">
+    <p><strong>Sau reboot server:</strong> Docker containers và systemd services đều tự khởi động. Tuy nhiên, luôn kiểm tra lại sau khi server reboot vì đôi khi có container cần thêm thời gian hoặc phụ thuộc vào container khác.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 15: THÊM / XÓA HOST -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--green-bg); color: var(--green);">&#128296;</div>
+    <div><h2 style="margin-bottom: 2px;">Thêm / Xóa Host</h2><span class="badge badge-green">HOST MANAGEMENT</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 16px;">
+    <div>
+      <h3 style="color: var(--green);">Quy trình thêm KVM host mới vào monitoring</h3>
+      <div class="card" style="border-color: var(--green-border); margin-bottom: 12px;">
+        <ol class="steps green" style="font-size: 12px;">
+          <li><strong>Cài node_exporter và libvirt_exporter</strong> trên host mới bằng script cài đặt tương ứng với OS (Oracle Linux 8 hoặc CentOS 7). Kiểm tra exporter đã respond trên port 9100 và 9177.</li>
+          <li><strong>Cấu hình firewall</strong> trên host mới: chỉ cho phép monitoring server (103.142.137.6) kết nối vào port 9100 và 9177. Từ chối tất cả IP khác.</li>
+          <li><strong>Cài Wazuh Agent</strong> trên host mới bằng script deploy-wazuh-agents.sh. Xác nhận agent đã connect và xuất hiện trong Wazuh Dashboard.</li>
+          <li><strong>Cài CrowdSec và YARA</strong> bằng script setup-crowdsec.sh và setup-yara.sh. Kiểm tra CrowdSec đã đăng ký với Central LAPI.</li>
+          <li><strong>Cài audit rules</strong> bằng script setup-audit-rules.sh để Wazuh có dữ liệu audit đầy đủ.</li>
+          <li><strong>Cập nhật prometheus.yml</strong> trên monitoring server: thêm IP:9100 và IP:9177 của host mới vào đúng job (cluster1 hoặc cluster2).</li>
+          <li><strong>Reload Prometheus config</strong> — không cần restart, chỉ cần gọi API reload để áp dụng ngay.</li>
+          <li>Mở <strong>Prometheus Targets</strong> tại :9090/targets — xác nhận host mới có trạng thái <strong>UP</strong>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="color: var(--red);">Quy trình xóa host khỏi monitoring</h3>
+      <div class="card" style="border-color: var(--red-border); margin-bottom: 12px;">
+        <ol class="steps red" style="font-size: 12px;">
+          <li><strong>Trước tiên:</strong> đảm bảo tất cả VM đã được migrate sang host khác. Kiểm tra danh sách VM đang chạy trên host trong OpenNebula.</li>
+          <li><strong>Xóa host khỏi Prometheus config</strong>: comment hoặc xóa IP:9100 và IP:9177 khỏi prometheus.yml, reload config.</li>
+          <li><strong>Xóa Wazuh Agent</strong>: dùng lệnh manage_agents trong wazuh.manager container với Agent ID tương ứng.</li>
+          <li><strong>Xóa CrowdSec machine</strong>: dùng cscli machines delete với hostname của host.</li>
+          <li>Nếu cần: SSH vào host và dừng tất cả monitoring services (node_exporter, libvirt_exporter, wazuh-agent, crowdsec) rồi disable chúng.</li>
+        </ol>
+      </div>
+
+      <h3>Checklist xác minh sau khi thêm/xóa host</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Hạng mục</th><th>Cách kiểm tra</th><th>Kỳ vọng</th></tr></thead>
+          <tbody>
+            <tr><td>Prometheus target</td><td>:9090/targets</td><td>Status: UP</td></tr>
+            <tr><td>Metrics xuất hiện</td><td>Grafana → Node Exporter Full</td><td>Host mới có trong dropdown</td></tr>
+            <tr><td>Wazuh Agent</td><td>Wazuh Dashboard → Agents</td><td>Status: Active</td></tr>
+            <tr><td>CrowdSec machine</td><td>cscli machines list</td><td>Host mới xuất hiện</td></tr>
+            <tr><td>Firewall (đã thêm)</td><td>Từ host mới, thử kết nối ra ngoài port 9100</td><td>Phải bị block</td></tr>
+            <tr><td>Alert không giả</td><td>Alertmanager :9093</td><td>Không có HostDown alert giả</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 16: KIỂM TRA HÀNG NGÀY -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--accent-glow); color: var(--accent);">&#128203;</div>
+    <div><h2 style="margin-bottom: 2px;">Checklist Kiểm Tra Định Kỳ</h2><span class="badge badge-accent">DAILY OPS</span></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <h3>Checklist kiểm tra hàng ngày (~10 phút)</h3>
+      <div class="card" style="border-color: var(--accent-light);">
+        <ol class="steps" style="font-size: 12px;">
+          <li>Kiểm tra <strong>Telegram</strong> — có alert mới nào trong đêm không? Nếu có, ghi nhận và xử lý theo quy trình</li>
+          <li>Mở <strong>Prometheus :9090/targets</strong> — đếm số targets UP. Kỳ vọng: khoảng 22 targets. Nếu thiếu — kiểm tra host/service tương ứng</li>
+          <li>Mở <strong>Alertmanager :9093</strong> — có alert nào đang FIRING không? Alert CRITICAL cần xử lý ngay</li>
+          <li>Mở <strong>Grafana Node Exporter Full</strong> — xem CPU và RAM tổng quan 24h qua của tất cả hosts</li>
+          <li>Mở <strong>Grafana SNMP Device</strong> — kiểm tra bandwidth switch, có port nào down không</li>
+          <li>Mở <strong>Wazuh Dashboard :443</strong> — xem tổng events hôm nay. Số bất thường cao → điều tra nguyên nhân</li>
+          <li>Kiểm tra <strong>Docker containers</strong> trên monitoring server — tất cả phải ở trạng thái Up</li>
+          <li>Kiểm tra <strong>Grafana OpenNebula Cloud</strong> — datastore usage không vượt 80%</li>
+        </ol>
+      </div>
+    </div>
+
+    <div>
+      <h3>Checklist kiểm tra hàng tuần (~30 phút)</h3>
+      <div class="card" style="border-color: var(--green-border);">
+        <ol class="steps green" style="font-size: 12px;">
+          <li>Kiểm tra <strong>dung lượng Prometheus TSDB</strong>: vào monitoring server, kiểm tra thư mục prometheus-data. Nếu gần 40GB — xem xét giảm retention hoặc số lượng series</li>
+          <li>Kiểm tra <strong>dung lượng Wazuh Indexer</strong>: truy vấn OpenSearch API xem các index có kích thước bình thường không</li>
+          <li>Review <strong>CrowdSec alerts 7 ngày qua</strong> — có IP nào bị flag nhiều cần whitelist không? Có pattern mới không?</li>
+          <li>Kiểm tra <strong>Ceph health</strong>: SSH vào turbo0201, chạy lệnh kiểm tra status trong container podman. Kỳ vọng: HEALTH_OK</li>
+          <li>Review <strong>Wazuh Security Events</strong> theo Rule ID — các rule nào active nhiều nhất, có false positive cần tune không</li>
+          <li>Kiểm tra <strong>YARA rules</strong> — có bản cập nhật mới không. Cập nhật nếu cần</li>
+          <li>Kiểm tra <strong>disk space</strong> trên monitoring server (ngoài TSDB) — log, core dumps, temp files</li>
+          <li>Review <strong>lịch sử alert</strong> tuần qua — xem pattern nào lặp lại, cần điều chỉnh ngưỡng không</li>
+        </ol>
+      </div>
+
+      <div class="hl red" style="margin-top: 10px;">
+        <p><strong>Dấu hiệu cần leo thang ngay:</strong> Nhiều hosts down cùng lúc | Alert DDoS | Wazuh phát hiện lateral movement | Ceph HEALTH_ERR kéo dài | Disk monitoring server &lt; 5GB free</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hl green">
+    <p><strong>Bookmark các URL quan trọng:</strong>
+      Prometheus: <code>:9090/targets</code> &nbsp;&nbsp;
+      Grafana: <code>:3000</code> &nbsp;&nbsp;
+      Alertmanager: <code>:9093</code> &nbsp;&nbsp;
+      Wazuh: <code>:443</code> &nbsp;&nbsp;
+      ntopng: <code>:3001</code>
+    </p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 17: XỬ LÝ SỰ CỐ -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--red-bg); color: var(--red);">&#128295;</div>
+    <div><h2 style="margin-bottom: 2px;">Xử Lý Sự Cố Thường Gặp</h2><span class="badge badge-red">TROUBLESHOOTING</span></div>
+  </div>
+
+  <div class="table-wrap" style="margin-bottom: 14px;">
+    <table>
+      <thead><tr><th>Triệu chứng</th><th>Nguyên nhân có thể</th><th>Cách xử lý</th><th>Thời gian dự kiến</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Host bị HostDown alert</strong></td>
+          <td>Host tắt nguồn; network down; exporter crash</td>
+          <td>Ping host → SSH kiểm tra → xem service node_exporter đang chạy không → kiểm tra firewall</td>
+          <td>5-15 phút</td>
+        </tr>
+        <tr>
+          <td><strong>VM không truy cập được</strong></td>
+          <td>VM crash, OS bị lỗi, network config sai</td>
+          <td>Xem VM state trong OpenNebula → nếu không RUNNING thì Start lại → dùng VNC console để debug OS</td>
+          <td>10-30 phút</td>
+        </tr>
+        <tr>
+          <td><strong>Prometheus không scrape được host</strong></td>
+          <td>Firewall block, exporter chết, network issue</td>
+          <td>Từ monitoring server: thử kết nối HTTP đến port 9100 của host → SSH kiểm tra service → kiểm tra firewall rules</td>
+          <td>10-20 phút</td>
+        </tr>
+        <tr>
+          <td><strong>Grafana hiện "No Data"</strong></td>
+          <td>Datasource UID sai, Prometheus không có data, biến template trống</td>
+          <td>Kiểm tra datasource UID trong Settings → kiểm tra Prometheus có data không → xem biến template có giá trị không</td>
+          <td>5-10 phút</td>
+        </tr>
+        <tr>
+          <td><strong>Không nhận được alert Telegram</strong></td>
+          <td>Bot token hết hạn, Alertmanager crash, inhibit rules chặn</td>
+          <td>Xem Alertmanager logs → kiểm tra bot token còn hoạt động → xem có inhibition rule nào đang chặn không</td>
+          <td>10-15 phút</td>
+        </tr>
+        <tr>
+          <td><strong>Alert spam liên tục</strong></td>
+          <td>Ngưỡng quá thấp, for duration quá ngắn, flapping</td>
+          <td>Xác nhận nguyên nhân thật → nếu là flapping: xem xét tăng for duration → nếu là false positive: điều chỉnh ngưỡng</td>
+          <td>30-60 phút</td>
+        </tr>
+        <tr>
+          <td><strong>Disk monitoring server gần đầy</strong></td>
+          <td>Prometheus TSDB lớn, Wazuh Indexer lớn, log files</td>
+          <td>Kiểm tra từng thư mục xem cái nào to nhất → Prometheus: giảm retention hoặc xóa series ít dùng → Wazuh: xóa index cũ</td>
+          <td>30-60 phút</td>
+        </tr>
+        <tr>
+          <td><strong>Network traffic bất thường</strong></td>
+          <td>DDoS, VM bị compromise, backup chạy</td>
+          <td>Xem ntopng top talkers ngay → xác định nguồn → nếu DDoS: thông báo team → nếu VM compromise: cô lập VM</td>
+          <td>15-60 phút</td>
+        </tr>
+        <tr>
+          <td><strong>Wazuh Agent offline</strong></td>
+          <td>Agent crash, network issue, agent certificate hết hạn</td>
+          <td>SSH vào host → kiểm tra wazuh-agent service → kiểm tra kết nối đến port 1514 của monitoring server → restart agent</td>
+          <td>10-15 phút</td>
+        </tr>
+        <tr>
+          <td><strong>CrowdSec false positive</strong></td>
+          <td>IP nội bộ bị nhận nhầm là tấn công</td>
+          <td>Xác nhận IP thật sự là nội bộ → thêm IP vào whitelist CrowdSec → kiểm tra rule nào gây ra để điều chỉnh ngưỡng</td>
+          <td>15-30 phút</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card" style="border-color: var(--red-border);">
+      <div class="card-title" style="color: var(--red);">Quy trình Leo Thang (Escalation)</div>
+      <ul class="clean" style="font-size: 12px;">
+        <li><span class="li-icon" style="color:var(--red);">&#9654;</span> <strong>Leo thang ngay:</strong> Nhiều hosts down cùng lúc, DDoS ảnh hưởng dịch vụ, phát hiện xâm nhập thật, Ceph HEALTH_ERR kéo dài &gt; 30 phút</li>
+        <li><span class="li-icon" style="color:var(--orange);">&#9654;</span> <strong>Leo thang trong 1h:</strong> Disk gần đầy (&lt; 5GB), alert critical chưa resolve trong 30 phút, Wazuh phát hiện lateral movement</li>
+        <li><span class="li-icon" style="color:var(--green);">&#9654;</span> <strong>Xử lý trong ca:</strong> Alert warning đơn lẻ, exporter down đơn lẻ, false positive CrowdSec</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color: var(--accent);">
+      <div class="card-title" style="color: var(--accent);">Thông tin leo thang</div>
+      <ul class="clean" style="font-size: 12px;">
+        <li><span class="li-icon">&#9654;</span> Ghi nhận thời điểm phát hiện sự cố</li>
+        <li><span class="li-icon">&#9654;</span> Chụp ảnh màn hình Grafana/Alertmanager</li>
+        <li><span class="li-icon">&#9654;</span> Liệt kê hosts và services bị ảnh hưởng</li>
+        <li><span class="li-icon">&#9654;</span> Mô tả các bước đã thử xử lý</li>
+        <li><span class="li-icon">&#9654;</span> Liên hệ team lead kỹ thuật qua kênh liên lạc nội bộ</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 18: BẢNG THAM CHIẾU PORT -->
+<!-- ============================================ -->
+<div class="slide">
+  <div class="section-divider">
+    <div class="section-icon" style="background: var(--yellow-bg); color: var(--yellow);">&#128279;</div>
+    <div><h2 style="margin-bottom: 2px;">Bảng Tham Chiếu Port</h2><span class="badge badge-yellow">REFERENCE</span></div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Port</th><th>Protocol</th><th>Dịch vụ</th><th>Chạy trên</th><th>Truy cập từ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="port">9090</span></td><td>TCP</td><td>Prometheus</td><td>Monitoring Server (Docker)</td><td>Admin</td></tr>
+        <tr><td><span class="port">3000</span></td><td>TCP</td><td>Grafana</td><td>Monitoring Server (Docker)</td><td>Admin</td></tr>
+        <tr><td><span class="port">9093</span></td><td>TCP</td><td>Alertmanager</td><td>Monitoring Server (Docker)</td><td>Admin</td></tr>
+        <tr><td><span class="port">443</span></td><td>TCP</td><td>Wazuh Dashboard</td><td>Monitoring Server (Docker)</td><td>Admin</td></tr>
+        <tr><td><span class="port">3001</span></td><td>TCP</td><td>ntopng</td><td>Monitoring Server (systemd)</td><td>Admin</td></tr>
+        <tr><td><span class="port">9100</span></td><td>TCP</td><td>node_exporter</td><td>Mỗi KVM Host</td><td>Monitoring Server only</td></tr>
+        <tr><td><span class="port">9177</span></td><td>TCP</td><td>libvirt_exporter</td><td>Mỗi KVM Host</td><td>Monitoring Server only</td></tr>
+        <tr><td><span class="port">9116</span></td><td>TCP</td><td>snmp_exporter</td><td>Monitoring Server (Docker)</td><td>Internal</td></tr>
+        <tr><td><span class="port">9621</span></td><td>TCP</td><td>OpenNebula Exporter</td><td>Monitoring Server (systemd)</td><td>Prometheus</td></tr>
+        <tr><td><span class="port">9283</span></td><td>TCP</td><td>Ceph Prometheus</td><td>Ceph MGR hosts</td><td>Monitoring Server only</td></tr>
+        <tr><td><span class="port">9710</span></td><td>TCP</td><td>CrowdSec Exporter</td><td>Monitoring Server (systemd)</td><td>Prometheus</td></tr>
+        <tr><td><span class="port">1514</span></td><td>TCP</td><td>Wazuh Agent Events</td><td>Monitoring Server (Docker)</td><td>All KVM Hosts</td></tr>
+        <tr><td><span class="port">1515</span></td><td>TCP</td><td>Wazuh Enrollment</td><td>Monitoring Server (Docker)</td><td>All KVM Hosts</td></tr>
+        <tr><td><span class="port">8180</span></td><td>TCP</td><td>CrowdSec Central LAPI</td><td>Monitoring Server</td><td>All Hosts</td></tr>
+        <tr><td><span class="port">514</span></td><td>UDP</td><td>Syslog (Juniper)</td><td>Monitoring Server</td><td>Juniper switch</td></tr>
+        <tr><td><span class="port">6343</span></td><td>UDP</td><td>sFlow (Juniper)</td><td>Monitoring Server</td><td>Juniper switch</td></tr>
+        <tr><td><span class="port">161</span></td><td>UDP</td><td>SNMP (Juniper)</td><td>Juniper switch</td><td>Monitoring Server</td></tr>
+        <tr><td><span class="port">55000</span></td><td>TCP</td><td>Wazuh API</td><td>Monitoring Server (Docker)</td><td>Admin</td></tr>
+        <tr><td><span class="port">2633</span></td><td>TCP</td><td>OpenNebula XML-RPC</td><td>turbo0201-0203</td><td>Monitoring Server</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SLIDE 19: TỔNG KẾT -->
+<!-- ============================================ -->
+<div class="slide">
+  <div style="text-align: center; margin-bottom: 24px;">
+    <h1 style="font-size: 34px;">Tổng Kết & Quy Trình Hỗ Trợ</h1>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 18px;">
+    <div class="card" style="border-color: var(--accent);">
+      <h3 style="color: var(--accent);">Kiến thức cốt lõi cần nắm</h3>
+      <ul class="clean" style="font-size: 13px;">
+        <li><span class="li-icon" style="color:var(--accent); font-weight:700;">1</span> <strong>OpenNebula</strong> quản lý VM lifecycle. Giao diện chính: Sunstone Web UI tại port 9869 trên turbo0201</li>
+        <li><span class="li-icon" style="color:var(--accent); font-weight:700;">2</span> <strong>KVM + libvirt</strong> là lớp ảo hóa. Mỗi VM là process QEMU-KVM riêng biệt với tài nguyên cô lập</li>
+        <li><span class="li-icon" style="color:var(--accent); font-weight:700;">3</span> <strong>Prometheus</strong> kéo metrics mỗi 15-30s. Config tại prometheus.yml. Reload không cần restart</li>
+        <li><span class="li-icon" style="color:var(--accent); font-weight:700;">4</span> <strong>Grafana</strong> visualize từ Prometheus. 8 dashboards. Truy cập tại port 3000</li>
+        <li><span class="li-icon" style="color:var(--accent); font-weight:700;">5</span> <strong>Alertmanager</strong> nhận alerts → gom nhóm → gửi Telegram. Critical alert repeat mỗi 1h</li>
+        <li><span class="li-icon" style="color:var(--accent); font-weight:700;">6</span> <strong>Wazuh SIEM</strong> thu thập và phân tích log toàn bộ host. Dashboard tại port 443</li>
+        <li><span class="li-icon" style="color:var(--accent); font-weight:700;">7</span> <strong>CrowdSec</strong> detect hành vi tấn công — hiện tại detect-only, chưa block tự động</li>
+        <li><span class="li-icon" style="color:var(--accent); font-weight:700;">8</span> <strong>Ceph</strong> lưu trữ phân tán 3x replication. Dùng <strong>podman</strong> (không docker) trên Ceph hosts</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-color: var(--green);">
+      <h3 style="color: var(--green); margin-bottom: 14px;">Quy trình hỗ trợ khách hàng — Decision Tree</h3>
+      <div class="vis-diagram" style="padding: 0;">
+        <div class="vis-box" style="background: var(--bg2); border-color: var(--border); text-align:center; margin-bottom:6px; font-weight:600;">Khách liên hệ yêu cầu hỗ trợ</div>
+        <div class="vis-row" style="margin-top:4px;">
+          <div class="vis-layer" style="background: var(--accent-light); border-color: rgba(3,105,161,0.25); flex:1;">
+            <div class="vis-layer-title" style="color:var(--accent); font-size:11px;">Tạo / thay đổi VM</div>
+            <div class="vis-layer-desc">Slide 5: Quy trình tạo VM → Sunstone → xác nhận quota → tạo → gửi IP</div>
+          </div>
+          <div class="vis-layer" style="background: var(--orange-light); border-color: var(--orange-border); flex:1;">
+            <div class="vis-layer-title" style="color:var(--orange); font-size:11px;">VM không kết nối được</div>
+            <div class="vis-layer-desc">Slide 5 / 17: Kiểm tra VM state → VNC console → kiểm tra OS → network config</div>
+          </div>
+        </div>
+        <div class="vis-row" style="margin-top:4px;">
+          <div class="vis-layer" style="background: var(--red-light); border-color: var(--red-border); flex:1;">
+            <div class="vis-layer-title" style="color:var(--red); font-size:11px;">Hiệu năng VM chậm</div>
+            <div class="vis-layer-desc">Slide 8: Grafana Libvirt dashboard → xem CPU/RAM/disk I/O → xem xét migrate hoặc scale</div>
+          </div>
+          <div class="vis-layer" style="background: var(--green-light); border-color: var(--green-border); flex:1;">
+            <div class="vis-layer-title" style="color:var(--green); font-size:11px;">Yêu cầu thêm storage</div>
+            <div class="vis-layer-desc">Slide 12: Kiểm tra Ceph free → OpenNebula → tắt VM → resize disk → khởi động lại</div>
+          </div>
+        </div>
+        <div class="vis-row" style="margin-top:4px;">
+          <div class="vis-layer" style="background: var(--purple-light); border-color: var(--purple-border); flex:1;">
+            <div class="vis-layer-title" style="color:var(--purple); font-size:11px;">Sự cố bảo mật</div>
+            <div class="vis-layer-desc">Slide 10/11: Wazuh events → CrowdSec alerts → đánh giá → leo thang nếu cần</div>
+          </div>
+          <div class="vis-layer" style="background: var(--blue-light); border-color: var(--blue-border); flex:1;">
+            <div class="vis-layer-title" style="color:var(--blue); font-size:11px;">Vấn đề mạng / bandwidth</div>
+            <div class="vis-layer-desc">Slide 13: ntopng top talkers → SNMP Grafana → xác định nguồn → xử lý theo loại</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-3" style="margin-bottom: 14px;">
+    <div class="card" style="border-color: var(--green-border);">
+      <div class="card-title" style="color: var(--green);">Tài liệu tham khảo</div>
+      <ul class="clean" style="font-size: 12px;">
+        <li><span class="li-icon" style="color:var(--green);">&#128214;</span> Prometheus: prometheus.io/docs</li>
+        <li><span class="li-icon" style="color:var(--green);">&#128214;</span> Grafana: grafana.com/docs</li>
+        <li><span class="li-icon" style="color:var(--green);">&#128214;</span> OpenNebula: docs.opennebula.io (v6.4)</li>
+        <li><span class="li-icon" style="color:var(--green);">&#128214;</span> Wazuh: documentation.wazuh.com (v4.11)</li>
+        <li><span class="li-icon" style="color:var(--green);">&#128214;</span> CrowdSec: docs.crowdsec.net</li>
+        <li><span class="li-icon" style="color:var(--green);">&#128214;</span> Ceph: docs.ceph.com</li>
+        <li><span class="li-icon" style="color:var(--green);">&#128214;</span> KVM/libvirt: libvirt.org/manpages</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color: var(--orange-border);">
+      <div class="card-title" style="color: var(--orange);">File config quan trọng</div>
+      <ul class="clean" style="font-size: 12px;">
+        <li><span class="li-icon">&#128196;</span> <span class="path">prometheus.yml</span> — scrape jobs</li>
+        <li><span class="li-icon">&#128196;</span> <span class="path">all_alerts.yml</span> — 16 alert rules</li>
+        <li><span class="li-icon">&#128196;</span> <span class="path">alertmanager.yml</span> — Telegram routing</li>
+        <li><span class="li-icon">&#128196;</span> <span class="path">snmp.yml</span> — Juniper MIB config</li>
+        <li><span class="li-icon">&#128196;</span> Tất cả trong <span class="path">/opt/monitoring/</span></li>
+        <li><span class="li-icon">&#128196;</span> Wazuh: <span class="path">/opt/wazuh/single-node/</span></li>
+      </ul>
+    </div>
+    <div class="card" style="border-color: var(--red-border);">
+      <div class="card-title" style="color: var(--red);">Ghi nhớ bảo mật</div>
+      <ul class="clean" style="font-size: 12px;">
+        <li><span class="li-icon" style="color:var(--red);">&#9888;</span> Credentials lưu trong <span class="path">credentials.md</span> — không commit git</li>
+        <li><span class="li-icon" style="color:var(--red);">&#9888;</span> CrowdSec hiện detect-only — chưa block tự động</li>
+        <li><span class="li-icon" style="color:var(--red);">&#9888;</span> Ceph hosts dùng podman — không phải docker</li>
+        <li><span class="li-icon" style="color:var(--red);">&#9888;</span> node05 đã tắt — bình thường khi thấy offline</li>
+        <li><span class="li-icon" style="color:var(--red);">&#9888;</span> Cluster 2 dùng CentOS 7 EOL — cẩn thận khi update</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="text-align: center; color: var(--text3); font-size: 12px;">
+    Tài liệu kỹ thuật nội bộ — Công Ty TNHH Công Nghệ EcoCloud &middot; Cập nhật: Tháng 3/2026
+  </div>
+</div>
+
+</div><!-- /slide-container -->
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <div class="counter" id="slideCounter">01 / 20</div>
+  <button class="nav-btn" id="prevBtn" onclick="prevSlide()">&larr; Trước</button>
+  <div class="title" id="navTitle"></div>
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">Tiếp &rarr;</button>
+  <div class="counter" style="text-align: right;"><kbd>&larr;</kbd> <kbd>&rarr;</kbd></div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+
+const titles = [
+  'EcoCloud Technical Operations',
+  'Kiến Trúc Tổng Thể',
+  'Sơ Đồ Server & Mạng',
+  'OpenNebula — Tổng Quan',
+  'OpenNebula — Tạo & Quản Lý VM',
+  'KVM & Ảo Hóa',
+  'Prometheus & Exporters',
+  'Grafana & Dashboards',
+  'Alertmanager & Cảnh Báo',
+  'Wazuh SIEM',
+  'CrowdSec & YARA',
+  'Ceph Storage',
+  'Network & sFlow',
+  'Docker Compose & Khởi Động',
+  'Thêm / Xóa Host',
+  'Checklist Kiểm Tra Hàng Ngày',
+  'Xử Lý Sự Cố',
+  'Bảng Tham Chiếu Port',
+  'Tổng Kết & Tài Liệu Tham Khảo'
+];
+
+function showSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = Math.max(0, Math.min(n, totalSlides - 1));
+  slides[currentSlide].classList.add('active');
+  updateUI();
+}
+function nextSlide() { showSlide(currentSlide + 1); }
+function prevSlide() { showSlide(currentSlide - 1); }
+
+function updateUI() {
+  document.getElementById('slideCounter').textContent = String(currentSlide + 1).padStart(2, '0') + ' / ' + totalSlides;
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('navTitle').textContent = titles[currentSlide] || '';
+  document.getElementById('progressBar').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  document.querySelectorAll('.toc-item').forEach((item, i) => { item.classList.toggle('active', i === currentSlide); });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+  else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); }
+});
+
+document.getElementById('tocToggle').addEventListener('click', () => { document.getElementById('tocPanel').classList.toggle('open'); });
+document.querySelectorAll('.toc-item').forEach(item => {
+  item.addEventListener('click', () => { showSlide(parseInt(item.dataset.slide)); document.getElementById('tocPanel').classList.remove('open'); });
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); } });
+
+updateUI();
+</script>
+</body>
+</html>
