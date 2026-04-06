@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoCloud — Tài Liệu Kinh Doanh Nội Bộ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Merriweather:wght@400;700&display=swap');
+
+  :root {
+    --bg: #f0f2f5;
+    --bg2: #e8ebf0;
+    --bg3: #e2e5eb;
+    --card: #ffffff;
+    --card-hover: #fafbfc;
+    --border: #d0d5dd;
+    --border2: #b8bfcb;
+    --text: #1e293b;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --accent: #0369a1;
+    --accent2: #0284c7;
+    --accent-light: #e0f2fe;
+    --accent-bg: rgba(3, 105, 161, 0.06);
+    --green: #15803d;
+    --green-light: #f0fdf4;
+    --green-border: #bbf7d0;
+    --orange: #b45309;
+    --orange-light: #fffbeb;
+    --orange-border: #fde68a;
+    --red: #b91c1c;
+    --red-light: #fef2f2;
+    --red-border: #fecaca;
+    --purple: #7e22ce;
+    --purple-light: #faf5ff;
+    --purple-border: #e9d5ff;
+    --blue: #1d4ed8;
+    --blue-light: #eff6ff;
+    --blue-border: #bfdbfe;
+    --teal: #0f766e;
+    --teal-light: #f0fdfa;
+    --teal-border: #99f6e4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .slide-container { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: none; flex-direction: column;
+    padding: 48px 72px 90px;
+    overflow-y: auto;
+    animation: fadeIn 0.35s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Nav bar */
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border); box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 40px; z-index: 100;
+  }
+  .nav-bar .counter { font-family: 'JetBrains Mono'; color: var(--text3); font-size: 12px; min-width: 70px; }
+  .nav-bar .title { color: var(--text2); font-size: 12px; font-weight: 500; text-align: center; flex: 1; }
+  .nav-btn {
+    background: var(--bg2); border: 1px solid var(--border); color: var(--text);
+    padding: 7px 18px; border-radius: 6px; cursor: pointer; font-size: 12px;
+    font-family: 'Inter'; font-weight: 500; transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--bg3); border-color: var(--accent); color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--bg3); z-index: 100; }
+  .progress-bar { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+
+  /* TOC */
+  .toc-toggle {
+    position: fixed; top: 16px; right: 24px;
+    background: var(--bg); border: 1px solid var(--border); color: var(--text2);
+    width: 34px; height: 34px; border-radius: 6px; cursor: pointer; z-index: 200;
+    display: flex; align-items: center; justify-content: center; font-size: 15px;
+    transition: all 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .toc-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .toc-panel {
+    position: fixed; top: 0; right: -380px; width: 380px; height: 100vh;
+    background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
+    border-left: 1px solid var(--border); z-index: 150; transition: right 0.3s ease;
+    overflow-y: auto; padding: 56px 20px 20px; box-shadow: -4px 0 20px rgba(0,0,0,0.05);
+  }
+  .toc-panel.open { right: 0; }
+  .toc-item {
+    padding: 9px 14px; border-radius: 6px; cursor: pointer; font-size: 12px;
+    color: var(--text2); transition: all 0.15s; margin-bottom: 1px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toc-item:hover { background: var(--bg3); color: var(--text); }
+  .toc-item.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .toc-item .num { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--text3); min-width: 22px; }
+  .toc-section { color: var(--text3); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; padding: 16px 14px 5px; }
+
+  /* Typography */
+  h1 { font-family: 'Merriweather', serif; font-size: 38px; font-weight: 700; line-height: 1.2; color: var(--text); }
+  h2 { font-family: 'Merriweather', serif; font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 20px; color: var(--text); }
+  h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--text); text-transform: uppercase; letter-spacing: 0.3px; }
+  .subtitle { font-size: 15px; color: var(--text2); font-weight: 400; line-height: 1.7; }
+  .accent-text { color: var(--accent); }
+
+  /* Grid */
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  /* Card */
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 22px; transition: all 0.15s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+  .card-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .card-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
+    border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .badge-accent { background: var(--accent-light); color: var(--accent); }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-orange { background: var(--orange-light); color: var(--orange); }
+  .badge-purple { background: var(--purple-light); color: var(--purple); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-teal { background: var(--teal-light); color: var(--teal); }
+
+  /* Table */
+  .table-wrap { border-radius: 8px; border: 1px solid var(--border); overflow: hidden; background: var(--card); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: var(--bg3); }
+  th { text-align: left; padding: 10px 16px; font-weight: 700; color: var(--text2); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 16px; border-bottom: 1px solid var(--bg3); color: var(--text); line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg2); }
+
+  /* Stat */
+  .stat { text-align: center; padding: 24px 16px; }
+  .stat-value { font-family: 'Merriweather', serif; font-size: 36px; font-weight: 700; color: var(--accent); line-height: 1.1; }
+  .stat-label { font-size: 12px; color: var(--text2); margin-top: 6px; font-weight: 500; }
+
+  /* Callout box */
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-light);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0;
+  }
+  .callout.green { border-color: var(--green); background: var(--green-light); }
+  .callout.orange { border-color: var(--orange); background: var(--orange-light); }
+  .callout.purple { border-color: var(--purple); background: var(--purple-light); }
+  .callout.red { border-color: var(--red); background: var(--red-light); }
+  .callout.teal { border-color: var(--teal); background: var(--teal-light); }
+  .callout p { font-size: 13px; line-height: 1.7; color: var(--text2); }
+  .callout strong { color: var(--text); }
+
+  /* Sell point */
+  .sell-point {
+    display: flex; gap: 16px; padding: 18px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .sell-point .num-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; flex-shrink: 0;
+  }
+  .sell-point .sp-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .sell-point .sp-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .sell-point .sp-talk { font-size: 12px; color: var(--green); margin-top: 6px; font-weight: 500; border-top: 1px solid var(--bg3); padding-top: 6px; }
+
+  /* Flow step */
+  .flow-step {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 18px; text-align: left;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .flow-arrow { text-align: center; color: var(--text3); font-size: 16px; padding: 2px 0; }
+
+  /* Tier */
+  .tier { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .tier-header { padding: 18px 22px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+  .tier-name { font-family: 'Merriweather', serif; font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+  .tier-target { font-size: 12px; color: var(--text3); }
+  .tier-body { padding: 18px 22px; }
+  .tier-item { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; font-size: 13px; color: var(--text2); }
+  .tier-item .check { color: var(--green); font-weight: 700; }
+  .tier-item .addon { color: var(--orange); font-weight: 700; }
+  .tier.featured { border-color: var(--accent); border-width: 2px; }
+  .tier.featured .tier-header { background: var(--accent-light); }
+
+  /* Objection card */
+  .objection { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .objection .q { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; padding-left: 12px; border-left: 3px solid var(--orange); }
+  .objection .a { font-size: 12px; color: var(--text2); line-height: 1.7; }
+
+  /* Section header */
+  .section-hdr { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--bg3); }
+  .section-num { font-family: 'JetBrains Mono'; font-size: 11px; color: var(--text3); font-weight: 500; }
+
+  /* Internal stamp */
+  .internal-stamp {
+    position: fixed; top: 16px; left: 24px; z-index: 200;
+    font-size: 10px; font-weight: 700; color: var(--red);
+    background: var(--red-light); border: 1px solid var(--red-border);
+    padding: 4px 12px; border-radius: 4px; letter-spacing: 0.8px; text-transform: uppercase;
+  }
+
+  /* Scrollbar */
+  .slide::-webkit-scrollbar { width: 6px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  kbd { background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; padding: 2px 6px; font-family: 'JetBrains Mono'; font-size: 11px; color: var(--text2); }
+
+  ul.clean { list-style: none; padding: 0; }
+  ul.clean li { padding: 6px 0; font-size: 13px; color: var(--text2); display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; }
+  .li-icon { flex-shrink: 0; width: 18px; text-align: center; }
+
+  .divider { border: none; border-top: 1px solid var(--bg3); margin: 16px 0; }
+
+  /* Layer card */
+  .layer-card { border: 1px solid var(--border); border-radius: 8px; padding: 18px; background: var(--card); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .layer-num { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-bottom: 10px; display: inline-block; }
+
+  /* Cloud Mind Map */
+  .mindmap { position: relative; width: 100%; height: 460px; margin: 0 auto; }
+
+  .mm-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 130px; height: 130px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #0284c7);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    color: #fff; font-weight: 800; font-size: 22px; cursor: default;
+    box-shadow: 0 4px 24px rgba(3,105,161,0.25); z-index: 10;
+  }
+  .mm-center small { font-size: 10px; font-weight: 500; opacity: 0.85; margin-top: 2px; }
+
+  .mm-node {
+    position: absolute; padding: 10px 18px; border-radius: 28px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    border: 2px solid var(--border); background: var(--card);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: all 0.25s ease; z-index: 10; white-space: nowrap;
+    user-select: none;
+  }
+  .mm-node:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .mm-node.active { border-width: 2px; transform: scale(1.08); }
+
+  .mm-line {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1;
+  }
+
+  .mm-popup {
+    display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px 28px; max-width: 420px; width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12); z-index: 50;
+    animation: popIn 0.25s ease;
+  }
+  .mm-popup.show { display: block; }
+  .mm-popup-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .mm-popup-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+  .mm-popup-close {
+    position: absolute; top: 10px; right: 14px; background: none; border: none;
+    font-size: 18px; color: var(--text3); cursor: pointer; padding: 4px;
+  }
+  .mm-popup-close:hover { color: var(--text); }
+  .mm-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.15); z-index: 40; border-radius: 12px; }
+  .mm-overlay.show { display: block; }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  .mm-hint { text-align: center; margin-top: 8px; font-size: 11px; color: var(--text3); }
+</style>
+</head>
+<body>
+
+<div class="internal-stamp">TÀI LIỆU NỘI BỘ — KHÔNG CHIA SẺ</div>
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+<button class="toc-toggle" id="tocToggle" title="Mục lục">&#9776;</button>
+<div class="toc-panel" id="tocPanel">
+  <div class="toc-section">Phần I — Tổng Quan</div>
+  <div class="toc-item" data-slide="0"><span class="num">01</span> Trang bìa</div>
+  <div class="toc-item" data-slide="1"><span class="num">02</span> Cloud là gì?</div>
+  <div class="toc-item" data-slide="2"><span class="num">03</span> Thuật ngữ cần biết</div>
+  <div class="toc-item" data-slide="3"><span class="num">04</span> EcoCloud là gì?</div>
+  <div class="toc-item" data-slide="4"><span class="num">05</span> Hạ tầng tổng thể</div>
+  <div class="toc-item" data-slide="5"><span class="num">06</span> Năng lực hạ tầng</div>
+  <div class="toc-section">Phần II — Sản Phẩm</div>
+  <div class="toc-item" data-slide="6"><span class="num">07</span> Cloud Server</div>
+  <div class="toc-item" data-slide="7"><span class="num">08</span> So sánh nền tảng, Hiệu năng & SLA</div>
+  <div class="toc-item" data-slide="8"><span class="num">09</span> Cloud Security</div>
+  <div class="toc-item" data-slide="9"><span class="num">10</span> Cloud Storage</div>
+  <div class="toc-item" data-slide="10"><span class="num">11</span> Cloud Backup</div>
+  <div class="toc-item" data-slide="11"><span class="num">12</span> Giám sát & SLA</div>
+  <div class="toc-section">Phần III — Chiến Lược Bán Hàng</div>
+  <div class="toc-item" data-slide="12"><span class="num">13</span> 6 điểm bán hàng cốt lõi</div>
+  <div class="toc-item" data-slide="13"><span class="num">14</span> So sánh cạnh tranh</div>
+  <div class="toc-item" data-slide="14"><span class="num">15</span> Đối tượng khách hàng</div>
+  <div class="toc-item" data-slide="15"><span class="num">16</span> Gói dịch vụ</div>
+  <div class="toc-section">Phần IV — Bảng Giá</div>
+  <div class="toc-item" data-slide="16"><span class="num">17</span> 2 Hình thức tính giá</div>
+  <div class="toc-item" data-slide="17"><span class="num">18</span> Bảng giá & Ví dụ tính giá</div>
+  <div class="toc-item" data-slide="18"><span class="num">19</span> Giá Backup, Storage & Add-on</div>
+  <div class="toc-section">Phần V — Kỹ Năng Bán Hàng</div>
+  <div class="toc-item" data-slide="19"><span class="num">20</span> Add-on & Upsell</div>
+  <div class="toc-item" data-slide="20"><span class="num">21</span> FAQ — Phần 1</div>
+  <div class="toc-item" data-slide="21"><span class="num">22</span> FAQ — Phần 2</div>
+  <div class="toc-item" data-slide="22"><span class="num">23</span> Xử lý từ chối</div>
+  <div class="toc-item" data-slide="23"><span class="num">24</span> Quy trình bán hàng</div>
+  <div class="toc-item" data-slide="24"><span class="num">25</span> Tổng kết</div>
+</div>
+
+<div class="slide-container" id="slideContainer">
+
+<!-- ================================================ -->
+<!-- SLIDE 0: TRANG BÌA -->
+<!-- ================================================ -->
+<div class="slide active" style="justify-content: center; align-items: center; text-align: center;">
+  <div style="margin-bottom: 16px;">
+    <span class="badge badge-red" style="font-size: 10px; padding: 4px 14px;">TÀI LIỆU MẬT — CHỈ DÀNH CHO NỘI BỘ</span>
+  </div>
+  <h1 style="font-size: 46px; margin-bottom: 10px; color: var(--accent);">EcoCloud</h1>
+  <p style="font-family: 'Merriweather', serif; font-size: 20px; color: var(--text2); font-weight: 400; margin-bottom: 8px;">Tài Liệu Kinh Doanh Nội Bộ</p>
+  <p style="font-size: 14px; color: var(--text3); max-width: 550px; margin: 0 auto 32px; line-height: 1.7;">
+    Trang bị kiến thức cho đội ngũ kinh doanh về hạ tầng, sản phẩm, lợi thế cạnh tranh và phương pháp tiếp cận khách hàng.
+  </p>
+  <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 36px;">
+    <span class="badge badge-accent">Private Cloud</span>
+    <span class="badge badge-green">Bảo mật đa lớp</span>
+    <span class="badge badge-purple">Lưu trữ phân tán</span>
+    <span class="badge badge-orange">Sao lưu doanh nghiệp</span>
+  </div>
+  <div style="border-top: 1px solid var(--border); padding-top: 20px; max-width: 400px; margin: 0 auto;">
+    <p style="font-size: 12px; color: var(--text3); line-height: 1.8;">
+      <strong style="color: var(--text2);">Công Ty TNHH Công Nghệ EcoCloud</strong><br>
+      Phiên bản 1.0 — Tháng 3/2026
+    </p>
+  </div>
+  <div style="margin-top: 30px; color: var(--text3); font-size: 11px;">
+    Dùng phím <kbd>&larr;</kbd> <kbd>&rarr;</kbd> để chuyển trang &middot; <kbd>&#9776;</kbd> mục lục
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 1: CLOUD LÀ GÌ? — INTERACTIVE MIND MAP -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">TỔNG QUAN &middot; 00</span>
+    <h2 style="margin-bottom: 0;">Cloud Là Gì? — Bức Tranh Toàn Cảnh</h2>
+  </div>
+  <p class="subtitle" style="margin-bottom: 8px;">Nhấn vào từng khái niệm để xem định nghĩa chi tiết. Đây là nền tảng kiến thức cần có trước khi tìm hiểu về EcoCloud.</p>
+
+  <div class="mindmap" id="mindmap">
+    <!-- SVG Lines connecting center to nodes -->
+    <svg class="mm-line" id="mmLines"></svg>
+
+    <!-- Center node -->
+    <div class="mm-center" id="mmCenter">Cloud<small>Computing</small></div>
+
+    <!-- Branch nodes — positions set via JS -->
+    <div class="mm-node" id="mn-cloud" data-def="cloud" style="border-color: var(--accent); color: var(--accent);">Cloud Computing</div>
+    <div class="mm-node" id="mn-public" data-def="public" style="border-color: var(--blue); color: var(--blue);">Public Cloud</div>
+    <div class="mm-node" id="mn-private" data-def="private" style="border-color: var(--green); color: var(--green);">Private Cloud</div>
+    <div class="mm-node" id="mn-hybrid" data-def="hybrid" style="border-color: var(--purple); color: var(--purple);">Hybrid Cloud</div>
+    <div class="mm-node" id="mn-vm" data-def="vm" style="border-color: var(--accent); color: var(--accent);">VM / VPS</div>
+    <div class="mm-node" id="mn-security" data-def="security" style="border-color: var(--red); color: var(--red);">Cloud Security</div>
+    <div class="mm-node" id="mn-storage" data-def="storage" style="border-color: var(--purple); color: var(--purple);">Cloud Storage</div>
+    <div class="mm-node" id="mn-backup" data-def="backup" style="border-color: var(--orange); color: var(--orange);">Cloud Backup</div>
+
+    <!-- Overlay & Popup -->
+    <div class="mm-overlay" id="mmOverlay"></div>
+    <div class="mm-popup" id="mmPopup">
+      <button class="mm-popup-close" id="mmClose">&times;</button>
+      <div class="mm-popup-title" id="mmPopTitle"></div>
+      <div class="mm-popup-desc" id="mmPopDesc"></div>
+    </div>
+  </div>
+  <div class="mm-hint">Nhấn vào từng khái niệm để xem định nghĩa &middot; Nhấn nền mờ hoặc &times; để đóng</div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 2: THUẬT NGỮ CẦN BIẾT -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">TỔNG QUAN &middot; 01</span>
+    <h2 style="margin-bottom: 0;">Thuật Ngữ Cần Biết</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 16px;">Trước khi đi vào nội dung, đây là danh sách các thuật ngữ kỹ thuật sẽ xuất hiện trong tài liệu. Hiểu đúng giúp bạn tự tin hơn khi giải thích cho khách hàng.</p>
+
+  <div class="grid grid-2" style="gap: 14px;">
+    <div>
+      <h3 style="color: var(--accent);">Hạ tầng & Ảo hóa</h3>
+      <div class="table-wrap" style="margin-bottom: 14px;">
+        <table>
+          <thead><tr><th style="width:28%;">Thuật ngữ</th><th>Giải thích đơn giản</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Private Cloud</strong></td><td>Hạ tầng cloud do mình sở hữu và vận hành (không phải thuê của AWS/Google). Toàn quyền kiểm soát.</td></tr>
+            <tr><td><strong>VM (Virtual Machine)</strong></td><td>Máy chủ ảo — một "máy tính trong máy tính". Có CPU, RAM, disk riêng, hoạt động như server thật.</td></tr>
+            <tr><td><strong>VPS</strong></td><td>Virtual Private Server — tên thương mại của VM khi bán cho khách hàng.</td></tr>
+            <tr><td><strong>KVM</strong></td><td>Công nghệ ảo hóa tích hợp trong Linux. Tạo VM cách ly hoàn toàn, mỗi VM có kernel riêng. Google Cloud cũng dùng KVM.</td></tr>
+            <tr><td><strong>OpenNebula</strong></td><td>Phần mềm quản lý cloud — tạo/xóa/di chuyển VM qua giao diện web. Giống vCenter của VMware nhưng miễn phí.</td></tr>
+            <tr><td><strong>Hypervisor</strong></td><td>Phần mềm chạy bên dưới VM, chia tài nguyên server thật cho các VM. KVM là một loại hypervisor.</td></tr>
+            <tr><td><strong>HA (High Availability)</strong></td><td>Khả năng tự phục hồi khi sự cố. Ví dụ: 3 node HA = 1 node hỏng, 2 node tự tiếp quản.</td></tr>
+            <tr><td><strong>Live Migration</strong></td><td>Di chuyển VM đang chạy sang server khác mà không cần tắt — khách hàng không hề biết.</td></tr>
+            <tr><td><strong>Snapshot</strong></td><td>Chụp lại trạng thái server tại một thời điểm. Nếu lỗi, quay về trạng thái đã chụp trong 1 phút.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="color: var(--purple);">Lưu trữ</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:28%;">Thuật ngữ</th><th>Giải thích đơn giản</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Ceph</strong></td><td>Hệ thống lưu trữ phân tán — dữ liệu lưu trên nhiều server cùng lúc. Facebook, CERN dùng Ceph.</td></tr>
+            <tr><td><strong>Replication (3x)</strong></td><td>Mỗi dữ liệu được sao 3 bản trên 3 server khác nhau. Hỏng 1 server → 2 bản còn lại vẫn an toàn.</td></tr>
+            <tr><td><strong>SSD</strong></td><td>Ổ cứng thể rắn — nhanh gấp 10-100 lần HDD truyền thống. Dùng cho VM và database.</td></tr>
+            <tr><td><strong>Block Storage</strong></td><td>Ổ cứng ảo gắn vào VM — khách dùng như ổ cứng bình thường.</td></tr>
+            <tr><td><strong>Object Storage (S3)</strong></td><td>Lưu trữ file qua API (giống Amazon S3). Dùng cho ảnh, video, backup, file tĩnh.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="color: var(--green);">Bảo mật</h3>
+      <div class="table-wrap" style="margin-bottom: 14px;">
+        <table>
+          <thead><tr><th style="width:28%;">Thuật ngữ</th><th>Giải thích đơn giản</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SIEM</strong></td><td>Security Information & Event Management — hệ thống thu thập và phân tích log bảo mật từ tất cả server. Như "camera an ninh" cho hệ thống IT.</td></tr>
+            <tr><td><strong>Wazuh</strong></td><td>Phần mềm SIEM mã nguồn mở. 10,000+ doanh nghiệp toàn cầu sử dụng.</td></tr>
+            <tr><td><strong>IDS</strong></td><td>Intrusion Detection System — tự động phát hiện hacker đang cố tấn công (brute force, port scan, ...).</td></tr>
+            <tr><td><strong>CrowdSec</strong></td><td>Phần mềm IDS cộng đồng — chia sẻ database IP độc hại toàn cầu. Phát hiện nhanh hơn nhờ "trí tuệ đám đông".</td></tr>
+            <tr><td><strong>Malware</strong></td><td>Phần mềm độc hại: virus, ransomware, backdoor, mã đào coin. YARA là công cụ quét phát hiện malware.</td></tr>
+            <tr><td><strong>Compliance</strong></td><td>Tuân thủ chuẩn bảo mật quốc tế (CIS, PCI-DSS, HIPAA). Bắt buộc với ngành tài chính, y tế.</td></tr>
+            <tr><td><strong>Firewall</strong></td><td>Tường lửa — chặn truy cập trái phép vào server. Lớp bảo vệ cơ bản nhất.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="color: var(--teal);">Giám sát & Sao lưu</h3>
+      <div class="table-wrap" style="margin-bottom: 14px;">
+        <table>
+          <thead><tr><th style="width:28%;">Thuật ngữ</th><th>Giải thích đơn giản</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Prometheus</strong></td><td>Hệ thống giám sát — thu thập 1000+ chỉ số từ mỗi server mỗi 15 giây. 90% công ty lớn dùng.</td></tr>
+            <tr><td><strong>Grafana</strong></td><td>Dashboard trực quan — biểu đồ CPU, RAM, disk, network realtime. Đẹp, dễ hiểu.</td></tr>
+            <tr><td><strong>SLA (99.9%)</strong></td><td>Service Level Agreement — cam kết uptime. 99.9% = tối đa ~8.7 giờ downtime cả năm.</td></tr>
+            <tr><td><strong>Veeam</strong></td><td>Hãng backup số 1 thế giới cho ảo hóa. 82% Fortune 500 sử dụng.</td></tr>
+            <tr><td><strong>DR (Disaster Recovery)</strong></td><td>Khôi phục thảm họa — khôi phục toàn bộ hệ thống sau sự cố nghiêm trọng (cháy, hỏng nhiều server).</td></tr>
+            <tr><td><strong>RPO / RTO</strong></td><td>RPO = mất tối đa bao nhiêu dữ liệu. RTO = mất bao lâu để khôi phục. Veeam: RPO gần 0, RTO vài phút.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="color: var(--orange);">Kinh doanh</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th style="width:28%;">Thuật ngữ</th><th>Giải thích đơn giản</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Overselling</strong></td><td>Bán vượt mức — ví dụ server có 100 CPU nhưng bán 150 CPU cho khách. EcoCloud KHÔNG oversell.</td></tr>
+            <tr><td><strong>TCO</strong></td><td>Total Cost of Ownership — tổng chi phí sở hữu (bao gồm server + backup + security + nhân sự IT).</td></tr>
+            <tr><td><strong>Vendor Lock-in</strong></td><td>Bị "khóa" vào 1 nhà cung cấp, khó chuyển đi. AWS có lock-in cao, EcoCloud dùng Linux chuẩn → dễ migrate.</td></tr>
+            <tr><td><strong>Egress Fee</strong></td><td>Phí truyền dữ liệu ra ngoài — AWS tính $0.09/GB. EcoCloud: miễn phí, không giới hạn.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 2: ECOCLOUD LÀ GÌ -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN I &middot; 01</span>
+    <h2 style="margin-bottom: 0;">EcoCloud là gì?</h2>
+  </div>
+
+  <div class="callout" style="margin-bottom: 20px;">
+    <p><strong>EcoCloud</strong> là dịch vụ Private Cloud do EcoCloud tự xây dựng và vận hành tại Việt Nam. Chúng ta cung cấp máy chủ ảo, lưu trữ, bảo mật và sao lưu cho doanh nghiệp — tương tự như AWS hoặc Azure nhưng hạ tầng đặt trong nước, giá cả ổn định, và hỗ trợ bằng tiếng Việt.</p>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 20px;">
+    <div class="card">
+      <div class="card-title" style="color: var(--accent);">&#9881; Nền tảng ảo hóa — OpenNebula 6.4 + KVM</div>
+      <div class="card-desc">
+        Nền tảng quản lý cloud mã nguồn mở cấp doanh nghiệp. Tạo, quản lý và mở rộng máy chủ ảo (VM) linh hoạt. Hỗ trợ tính năng High Availability với 3 node frontend — nếu 1 node gặp sự cố, 2 node còn lại tự động tiếp quản, đảm bảo dịch vụ không bị gián đoạn.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color: var(--green);">&#128274; Bảo mật đa lớp — Wazuh + CrowdSec + YARA</div>
+      <div class="card-desc">
+        Hệ thống 4 lớp bảo mật hoạt động 24/7: phân tích log (SIEM), phát hiện xâm nhập (IDS), quét malware và kiểm tra tuân thủ chuẩn quốc tế. Tương đương mức bảo mật của các tổ chức tài chính và ngân hàng.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color: var(--purple);">&#128451; Lưu trữ phân tán — Ceph Storage</div>
+      <div class="card-desc">
+        Dữ liệu được tự động sao chép thành 3 bản trên 3 server vật lý khác nhau. Khi ổ cứng hỏng, hệ thống tự phục hồi — không mất dữ liệu, không gián đoạn. Đây là công nghệ được Facebook, CERN và Bloomberg sử dụng.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color: var(--orange);">&#128193; Sao lưu chuyên nghiệp — Veeam Backup</div>
+      <div class="card-desc">
+        Giải pháp sao lưu hàng đầu thế giới cho môi trường ảo hóa. Sao lưu tự động hàng ngày, khôi phục toàn bộ server trong vài phút (không phải vài giờ). Hỗ trợ mã hóa AES-256 và disaster recovery.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Điểm khác biệt cốt lõi:</strong> Toàn bộ hạ tầng nằm tại Việt Nam, do đội ngũ EcoCloud trực tiếp vận hành. Khách hàng được hỗ trợ bằng tiếng Việt, xử lý sự cố nhanh hơn nhiều so với liên hệ support nước ngoài. Chi phí cố định hàng tháng, không phát sinh phí ẩn.</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 2: HẠ TẦNG TỔNG THỂ -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN I &middot; 02</span>
+    <h2 style="margin-bottom: 0;">Hạ Tầng Tổng Thể</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 20px;">Sơ đồ dưới đây mô tả cách các thành phần hạ tầng kết nối với nhau. Khi khách hàng hỏi "hệ thống hoạt động thế nào?", đây là bức tranh toàn cảnh.</p>
+
+  <div class="grid grid-3" style="margin-bottom: 20px;">
+    <div class="card" style="border-top: 3px solid var(--accent); text-align: center;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 8px;">LỚP QUẢN LÝ</div>
+      <div class="card-desc">
+        <strong>OpenNebula 6.4</strong><br>
+        Quản lý tạo/xóa/di chuyển VM<br>
+        3 node HA (tự failover)<br>
+        Web portal + API
+      </div>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--green); text-align: center;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 8px;">LỚP TÍNH TOÁN</div>
+      <div class="card-desc">
+        <strong>Cụm máy chủ vật lý KVM</strong><br>
+        100+ VM đang hoạt động<br>
+        3+ TB RAM tổng<br>
+        Tài nguyên riêng cho mỗi VM
+      </div>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--purple); text-align: center;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--purple); margin-bottom: 8px;">LỚP LƯU TRỮ</div>
+      <div class="card-desc">
+        <strong>2 Ceph Clusters</strong><br>
+        30+ TB dung lượng<br>
+        3x replication tự phục hồi<br>
+        Block + Object (S3) storage
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-3" style="margin-bottom: 20px;">
+    <div class="card" style="border-top: 3px solid var(--blue); text-align: center;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 8px;">LỚP MẠNG</div>
+      <div class="card-desc">
+        Core switch enterprise<br>
+        Dual ISP dự phòng<br>
+        sFlow deep packet inspection<br>
+        Phân tích traffic realtime
+      </div>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--orange); text-align: center;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 8px;">LỚP BẢO MẬT</div>
+      <div class="card-desc">
+        <strong>4 lớp bảo mật</strong><br>
+        Wazuh SIEM<br>
+        CrowdSec IDS<br>
+        YARA malware scan
+      </div>
+    </div>
+    <div class="card" style="border-top: 3px solid var(--teal); text-align: center;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--teal); margin-bottom: 8px;">LỚP GIÁM SÁT</div>
+      <div class="card-desc">
+        <strong>Prometheus + Grafana</strong><br>
+        Giám sát toàn bộ hạ tầng<br>
+        Cảnh báo tự động 24/7<br>
+        Alert Telegram &lt;3 giây
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Giải thích đơn giản cho khách:</strong> "Hệ thống của chúng tôi gồm 6 lớp: quản lý cloud, máy chủ vật lý, lưu trữ dữ liệu, mạng, bảo mật và giám sát. Tất cả hoạt động đồng bộ 24/7, tự động phát hiện và xử lý sự cố."</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 3: NĂNG LỰC HẠ TẦNG -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN I &middot; 03</span>
+    <h2 style="margin-bottom: 0;">Năng Lực Hạ Tầng</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 20px;">Đây là số liệu thực tế đang vận hành — không phải con số marketing. Hãy dùng để tạo sự tin tưởng khi trình bày.</p>
+
+  <div class="grid grid-4" style="margin-bottom: 20px;">
+    <div class="card stat"><div class="stat-value">2,000+</div><div class="stat-label">CPU Cores</div></div>
+    <div class="card stat"><div class="stat-value">100+</div><div class="stat-label">VM đang chạy</div></div>
+    <div class="card stat"><div class="stat-value">30+ TB</div><div class="stat-label">Dung lượng lưu trữ</div></div>
+    <div class="card stat"><div class="stat-value">99.9%</div><div class="stat-label">Cam kết Uptime</div></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 20px;">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th colspan="2">Năng lực phần cứng</th></tr></thead>
+        <tbody>
+          <tr><td style="width:40%;"><strong>Tổng CPU</strong></td><td>2,000+ cores</td></tr>
+          <tr><td><strong>Tổng RAM</strong></td><td>3+ TB</td></tr>
+          <tr><td><strong>Lưu trữ</strong></td><td>30+ TB (Ceph SSD, 3x replication)</td></tr>
+          <tr><td><strong>Core Switch</strong></td><td>Enterprise-grade, 10 Gigabit</td></tr>
+          <tr><td><strong>Đường truyền</strong></td><td>Dual ISP dự phòng</td></tr>
+          <tr><td><strong>HA Frontend</strong></td><td>3 nodes (tự động failover)</td></tr>
+          <tr><td><strong>Ceph Clusters</strong></td><td>2 clusters, 3x replication</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th colspan="2">Năng lực bảo mật & giám sát</th></tr></thead>
+        <tbody>
+          <tr><td style="width:40%;"><strong>SIEM Wazuh</strong></td><td><span class="badge badge-green">Hoạt động</span> 196K+ events đã phân tích</td></tr>
+          <tr><td><strong>IDS CrowdSec</strong></td><td><span class="badge badge-green">Hoạt động</span> 63+ tấn công đã phát hiện</td></tr>
+          <tr><td><strong>Malware YARA</strong></td><td><span class="badge badge-green">Hoạt động</span> 523 rules nhận dạng</td></tr>
+          <tr><td><strong>Tuân thủ OpenSCAP</strong></td><td><span class="badge badge-green">Hoạt động</span> CIS, PCI-DSS, HIPAA</td></tr>
+          <tr><td><strong>Monitoring</strong></td><td>1000+ chỉ số/server, 24/7</td></tr>
+          <tr><td><strong>Cảnh báo</strong></td><td>Tự động, độ trễ &lt;3 giây</td></tr>
+          <tr><td><strong>Lưu trữ dữ liệu</strong></td><td>Giám sát 90 ngày, bảo mật 30 ngày</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout teal">
+    <p><strong>Cách dùng số liệu khi bán hàng:</strong> Đừng liệt kê số khô khan. Hãy nói: "Chúng tôi đang phục vụ hơn 100 máy chủ ảo với 4 lớp bảo mật giám sát 24/7. Hệ thống đã phân tích gần 200,000 sự kiện bảo mật và phát hiện hơn 63 cuộc tấn công thực tế."</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 4: CLOUD SERVER -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN II &middot; 04</span>
+    <h2 style="margin-bottom: 0;">Dịch Vụ Cloud Server (VPS/VM)</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 16px;">Sản phẩm cốt lõi — nguồn doanh thu chính. Khách hàng thuê máy chủ ảo với tài nguyên riêng biệt, cách ly hoàn toàn.</p>
+
+  <div class="grid grid-2" style="margin-bottom: 16px;">
+    <div>
+      <h3>Đặc điểm kỹ thuật</h3>
+      <ul class="clean">
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>KVM Virtualization:</strong> Ảo hóa phần cứng thực sự — mỗi VM có hệ điều hành riêng, cách ly như server vật lý. Google Cloud cũng chạy trên KVM.</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Tài nguyên đảm bảo:</strong> CPU và RAM cấp phát riêng, không overselling. Mua 4 CPU + 8GB RAM = luôn có đúng chừng đó.</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>SSD trên Ceph:</strong> Disk ảo trên Ceph 3x replication. IOPS cao, an toàn tuyệt đối.</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Live Migration:</strong> Di chuyển VM đang chạy sang host khác — 0 downtime khi bảo trì.</li>
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Multi-OS:</strong> Ubuntu, CentOS, AlmaLinux, Rocky Linux, Windows Server, v.v.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Khách hàng được gì?</h3>
+      <ul class="clean">
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Root access đầy đủ</strong> — toàn quyền quản lý, cài đặt bất kỳ phần mềm nào</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>IP tĩnh riêng (IPv4)</strong> — mỗi VM có địa chỉ IP công cộng riêng</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Web console</strong> — truy cập server qua trình duyệt (không cần SSH client)</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Snapshot & Restore</strong> — chụp trạng thái bất kỳ lúc nào, khôi phục 1-click</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Dashboard Grafana</strong> — CPU, RAM, disk, network realtime</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Hỗ trợ tiếng Việt</strong> — đội ngũ EcoCloud trực tiếp, không qua trung gian</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>SLA 99.9% uptime</strong> — HA 3 node, tự failover</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <p><strong>Câu bán hàng gợi ý:</strong> "Mỗi VM là một server riêng biệt — CPU, RAM, disk đảm bảo. Người dùng khác không ảnh hưởng hiệu năng. Nâng cấp tài nguyên không cần dừng server."</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 4b: SO SÁNH HYPERVISOR & SLA & PERFORMANCE -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN II &middot; 04b</span>
+    <h2 style="margin-bottom: 0;">So Sánh Nền Tảng, Hiệu Năng & SLA</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 14px;">Khách hàng IT thường hỏi: "Tại sao KVM chứ không phải VMware?". Đây là bảng so sánh và cam kết hiệu năng để trả lời.</p>
+
+  <h3>So sánh nền tảng ảo hóa</h3>
+  <div class="table-wrap" style="margin-bottom: 16px;">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:18%;">Tiêu chí</th>
+          <th style="width:22%; color: var(--accent);">KVM (EcoCloud)</th>
+          <th style="width:20%;">VMware vSphere</th>
+          <th style="width:20%;">Microsoft Hyper-V</th>
+          <th style="width:20%;">Citrix Hypervisor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Loại</strong></td>
+          <td>Type-1 (bare-metal)</td>
+          <td>Type-1 (bare-metal)</td>
+          <td>Type-1 (bare-metal)</td>
+          <td>Type-1 (bare-metal)</td>
+        </tr>
+        <tr>
+          <td><strong>License</strong></td>
+          <td style="color: var(--green);">&#10003; Miễn phí (Open-source)</td>
+          <td style="color: var(--red);">$$$  ~$6,000/CPU/năm</td>
+          <td style="color: var(--orange);">$$ Đi kèm Windows Server</td>
+          <td style="color: var(--orange);">$$ Free tier hạn chế</td>
+        </tr>
+        <tr>
+          <td><strong>Ai dùng?</strong></td>
+          <td>Google Cloud, Red Hat, IBM, DigitalOcean</td>
+          <td>Enterprise on-premise truyền thống</td>
+          <td>Doanh nghiệp Microsoft</td>
+          <td>Đang giảm thị phần</td>
+        </tr>
+        <tr>
+          <td><strong>Hiệu năng</strong></td>
+          <td style="color: var(--green);">&#10003; Near-native (1-3% overhead)</td>
+          <td>&#10003; Near-native (2-5% overhead)</td>
+          <td>Tốt với Windows VM</td>
+          <td>Tương đương KVM</td>
+        </tr>
+        <tr>
+          <td><strong>Live Migration</strong></td>
+          <td style="color: var(--green);">&#10003; Có</td>
+          <td>&#10003; vMotion</td>
+          <td>&#10003; Có</td>
+          <td>&#10003; XenMotion</td>
+        </tr>
+        <tr>
+          <td><strong>HA / Failover</strong></td>
+          <td style="color: var(--green);">&#10003; OpenNebula HA</td>
+          <td>&#10003; vSphere HA</td>
+          <td>&#10003; Failover Clustering</td>
+          <td>&#10003; HA Pool</td>
+        </tr>
+        <tr>
+          <td><strong>OS hỗ trợ</strong></td>
+          <td style="color: var(--green);">&#10003; Linux + Windows</td>
+          <td>&#10003; Linux + Windows</td>
+          <td>&#9888; Windows tối ưu, Linux cơ bản</td>
+          <td>&#10003; Linux + Windows</td>
+        </tr>
+        <tr>
+          <td><strong>Vendor Lock-in</strong></td>
+          <td style="color: var(--green);">&#10003; Không — standard Linux</td>
+          <td>&#9888; Cao (VMDK format, vCenter)</td>
+          <td>&#9888; Cao (VHD, Hyper-V Manager)</td>
+          <td>&#9888; Trung bình</td>
+        </tr>
+        <tr>
+          <td><strong>Cộng đồng</strong></td>
+          <td style="color: var(--green);">Hàng triệu developer, Linux kernel team</td>
+          <td>Broadcom support (trả phí)</td>
+          <td>Microsoft support (trả phí)</td>
+          <td>Đang thu hẹp</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 14px;">
+    <div>
+      <h3>Cam kết hiệu năng (SSD trên Ceph)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Chỉ số</th><th>Cam kết</th><th>Ghi chú</th></tr></thead>
+          <tbody>
+            <tr><td><strong>IOPS (Random Read)</strong></td><td style="color: var(--accent); font-weight: 700;">10,000 - 50,000+</td><td>Tùy cấu hình pool SSD</td></tr>
+            <tr><td><strong>IOPS (Random Write)</strong></td><td style="color: var(--accent); font-weight: 700;">5,000 - 30,000+</td><td>3x write do replication</td></tr>
+            <tr><td><strong>Throughput (Seq. Read)</strong></td><td style="color: var(--accent); font-weight: 700;">200 - 500 MB/s</td><td>Phụ thuộc network/disk</td></tr>
+            <tr><td><strong>Throughput (Seq. Write)</strong></td><td style="color: var(--accent); font-weight: 700;">100 - 300 MB/s</td><td>3x write do replication</td></tr>
+            <tr><td><strong>Latency (Read)</strong></td><td style="color: var(--accent); font-weight: 700;">&lt; 1ms</td><td>SSD + local cache</td></tr>
+            <tr><td><strong>Latency (Write)</strong></td><td style="color: var(--accent); font-weight: 700;">&lt; 2ms</td><td>Sau khi 3 bản sao xác nhận</td></tr>
+            <tr><td><strong>Network</strong></td><td style="color: var(--accent); font-weight: 700;">10 Gbps</td><td>Core switch 10GbE</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h3>Cam kết SLA chi tiết</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Hạng mục</th><th>Cam kết</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Uptime hạ tầng</strong></td><td style="color: var(--green); font-weight: 700;">99.9% (~8.7h downtime/năm)</td></tr>
+            <tr><td><strong>Uptime mạng</strong></td><td style="color: var(--green); font-weight: 700;">99.9% (dual ISP dự phòng)</td></tr>
+            <tr><td><strong>Phát hiện sự cố</strong></td><td>&lt; 1 phút (giám sát 15s/lần)</td></tr>
+            <tr><td><strong>Thông báo sự cố</strong></td><td>&lt; 3 giây (Telegram tự động)</td></tr>
+            <tr><td><strong>Phản hồi sự cố</strong></td><td>&lt; 15 phút (giờ hành chính)</td></tr>
+            <tr><td><strong>Khôi phục VM</strong></td><td>&lt; 5 phút (từ Veeam backup)</td></tr>
+            <tr><td><strong>Live Migration</strong></td><td>0 downtime (bảo trì kế hoạch)</td></tr>
+            <tr><td><strong>Bảo trì kế hoạch</strong></td><td>Thông báo trước 48h</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="callout">
+      <p><strong>Bảo mật VM tiêu chuẩn:</strong> Mỗi VM được bảo vệ bởi 4 lớp: firewall cách ly (iptables/nftables), SIEM giám sát log, IDS phát hiện xâm nhập, và quét malware định kỳ. Tất cả VM nằm trong mạng VLAN riêng — không thể truy cập lẫn nhau trừ khi được cấu hình.</p>
+    </div>
+    <div class="callout green">
+      <p><strong>Khi khách hỏi "tại sao KVM?":</strong> "KVM là hypervisor mà Google Cloud và DigitalOcean sử dụng. Hiệu năng gần bằng bare-metal (overhead chỉ 1-3%), miễn phí license nên chúng tôi tiết kiệm chi phí cho khách hàng. VMware tính phí $6,000+/CPU/năm — chi phí đó cuối cùng khách phải trả."</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 5: CLOUD SECURITY -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN II &middot; 05</span>
+    <h2 style="margin-bottom: 0;">Cloud Security — Bảo Mật 4 Lớp</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 18px;">Đây là điểm khác biệt lớn nhất so với các nhà cung cấp VPS thông thường. Hầu hết VPS chỉ có firewall cơ bản — chúng ta có 4 lớp bảo mật chuyên nghiệp.</p>
+
+  <div class="grid grid-2" style="margin-bottom: 16px;">
+    <div class="layer-card">
+      <span class="layer-num" style="background: var(--green-light); color: var(--green);">LỚP 1 — SIEM</span>
+      <div class="card-title">Wazuh 4.11 — Phân Tích Log & Sự Kiện</div>
+      <div class="card-desc">
+        <strong>Hoạt động thế nào:</strong> Thu thập và phân tích toàn bộ log từ mọi server — ai đăng nhập, file nào bị thay đổi, có ai cố truy cập trái phép không. Tất cả được phân tích tự động theo thời gian thực.<br><br>
+        <strong>Giải thích cho khách:</strong> "Giống như hệ thống camera an ninh cho server. Mọi hành động đều được ghi lại và phân tích. Phát hiện ngay lập tức khi có điều bất thường."<br><br>
+        <strong>Con số thực tế:</strong> 196,000+ sự kiện đã được phân tích. Phát hiện cả hành vi tấn công nâng cao.
+      </div>
+    </div>
+    <div class="layer-card">
+      <span class="layer-num" style="background: var(--blue-light); color: var(--blue);">LỚP 2 — IDS</span>
+      <div class="card-title">CrowdSec — Phát Hiện & Chặn Tấn Công</div>
+      <div class="card-desc">
+        <strong>Hoạt động thế nào:</strong> Phân tích hành vi truy cập để phát hiện tấn công: brute force SSH (thử mật khẩu liên tục), quét port, khai thác lỗ hổng. Sử dụng cơ sở dữ liệu IP độc hại toàn cầu được cập nhật liên tục.<br><br>
+        <strong>Giải thích cho khách:</strong> "Hệ thống tự động nhận diện hacker và chặn IP của họ. Không cần chờ người quản trị phát hiện — máy tính tự phát hiện và xử lý."<br><br>
+        <strong>Con số thực tế:</strong> 63+ cuộc tấn công SSH brute force đã phát hiện từ các IP ở Nga, Pháp và nhiều quốc gia khác.
+      </div>
+    </div>
+    <div class="layer-card">
+      <span class="layer-num" style="background: var(--purple-light); color: var(--purple);">LỚP 3 — MALWARE</span>
+      <div class="card-title">YARA — Quét Phần Mềm Độc Hại</div>
+      <div class="card-desc">
+        <strong>Hoạt động thế nào:</strong> Quét file trên server để phát hiện virus, backdoor, ransomware, mã độc đào tiền ảo. Sử dụng 523 bộ nhận dạng malware được cập nhật từ cộng đồng bảo mật toàn cầu.<br><br>
+        <strong>Giải thích cho khách:</strong> "Như phần mềm diệt virus nhưng cho server. Quét tự động với hàng trăm mẫu nhận dạng mã độc đã biết trên toàn thế giới."<br><br>
+        <strong>Con số thực tế:</strong> 523 bộ rule nhận dạng, quét tự động trên toàn bộ server.
+      </div>
+    </div>
+    <div class="layer-card">
+      <span class="layer-num" style="background: var(--orange-light); color: var(--orange);">LỚP 4 — COMPLIANCE</span>
+      <div class="card-title">OpenSCAP — Kiểm Tra Tuân Thủ Chuẩn Quốc Tế</div>
+      <div class="card-desc">
+        <strong>Hoạt động thế nào:</strong> Tự động kiểm tra xem server có được cấu hình đúng theo chuẩn bảo mật quốc tế không: CIS Benchmarks (tiêu chuẩn bảo mật hệ thống), PCI-DSS (tiêu chuẩn thanh toán), HIPAA (tiêu chuẩn y tế).<br><br>
+        <strong>Giải thích cho khách:</strong> "Chúng tôi kiểm tra server theo đúng chuẩn quốc tế — cùng tiêu chuẩn mà ngân hàng và bệnh viện phải tuân thủ. Giúp doanh nghiệp bạn sẵn sàng cho kiểm toán bảo mật."<br><br>
+        <strong>Phù hợp đặc biệt với:</strong> Tài chính, ngân hàng, y tế, bảo hiểm, cơ quan chính phủ.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout purple">
+    <p><strong>Tổng kết cho khách:</strong> "VPS thông thường chỉ có tường lửa cơ bản — như có khóa cửa nhưng không có camera, không có bảo vệ, không có hệ thống báo động. EcoCloud có đủ 4 lớp: camera (SIEM), bảo vệ (IDS), thiết bị dò mã độc (YARA) và kiểm toán viên (Compliance). Tất cả hoạt động tự động 24/7."</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 6: CLOUD STORAGE -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN II &middot; 06</span>
+    <h2 style="margin-bottom: 0;">Cloud Storage — Lưu Trữ Phân Tán Ceph</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 18px;">Ceph là hệ thống lưu trữ phân tán — dữ liệu tự động được nhân bản trên nhiều server, đảm bảo an toàn ngay cả khi phần cứng hỏng.</p>
+
+  <div class="grid grid-3" style="margin-bottom: 18px;">
+    <div class="card stat" style="border-top: 3px solid var(--purple);"><div class="stat-value" style="color: var(--purple);">2</div><div class="stat-label">Ceph Clusters</div></div>
+    <div class="card stat" style="border-top: 3px solid var(--purple);"><div class="stat-value" style="color: var(--purple);">30+ TB</div><div class="stat-label">Tổng dung lượng</div></div>
+    <div class="card stat" style="border-top: 3px solid var(--purple);"><div class="stat-value" style="color: var(--purple);">3x</div><div class="stat-label">Hệ số nhân bản</div></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 18px;">
+    <div>
+      <h3>Cách hoạt động (giải thích đơn giản)</h3>
+      <ul class="clean">
+        <li><span class="li-icon" style="color:var(--purple);">1.</span> <strong>Khi lưu file:</strong> Dữ liệu được chia nhỏ và ghi đồng thời lên 3 server khác nhau (3 bản sao).</li>
+        <li><span class="li-icon" style="color:var(--purple);">2.</span> <strong>Khi ổ cứng hỏng:</strong> Hệ thống tự phát hiện, sử dụng 2 bản sao còn lại và tạo bản sao mới trên server khác — hoàn toàn tự động, không cần người can thiệp.</li>
+        <li><span class="li-icon" style="color:var(--purple);">3.</span> <strong>Khi cần thêm dung lượng:</strong> Chỉ cần thêm server/disk mới vào cluster. Dữ liệu tự cân bằng lại, không cần downtime.</li>
+      </ul>
+
+      <div class="callout" style="margin-top: 14px;">
+        <p><strong>So sánh dễ hiểu cho khách:</strong> "Hosting thông thường lưu dữ liệu trên 1 ổ cứng duy nhất — hỏng ổ cứng là mất hết. Chúng tôi lưu 3 bản sao trên 3 server khác nhau. Dù 1 server hỏng hoàn toàn, dữ liệu của bạn vẫn nguyên vẹn và truy cập bình thường."</p>
+      </div>
+    </div>
+    <div>
+      <h3>3 loại lưu trữ cung cấp</h3>
+      <div class="card" style="margin-bottom: 10px; border-left: 3px solid var(--purple);">
+        <div class="card-title" style="color: var(--purple);">Block Storage (RBD)</div>
+        <div class="card-desc">Ổ cứng ảo gắn trực tiếp vào VM. Tốc độ cao, phù hợp cho hệ điều hành và database. Giống như gắn thêm ổ SSD cho server.<br><strong>Dùng khi:</strong> Chạy database (MySQL, PostgreSQL), OS disk, ứng dụng cần I/O nhanh.</div>
+      </div>
+      <div class="card" style="margin-bottom: 10px; border-left: 3px solid var(--purple);">
+        <div class="card-title" style="color: var(--purple);">Object Storage (S3-compatible)</div>
+        <div class="card-desc">Lưu trữ file qua API, tương thích hoàn toàn với Amazon S3. Không giới hạn số lượng file.<br><strong>Dùng khi:</strong> Lưu ảnh, video, backup, static files cho website. Startup đang dùng S3 có thể chuyển sang không cần đổi code.</div>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--purple);">
+        <div class="card-title" style="color: var(--purple);">Shared Filesystem (CephFS)</div>
+        <div class="card-desc">Thư mục chia sẻ giữa nhiều VM, thay thế NFS truyền thống. Nhiều server đọc/ghi cùng lúc.<br><strong>Dùng khi:</strong> Nhiều web server cần truy cập chung thư mục upload, media, hoặc shared data.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 7: CLOUD BACKUP -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN II &middot; 07</span>
+    <h2 style="margin-bottom: 0;">Cloud Backup — Veeam Backup & Recovery</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 18px;">Veeam là hãng số 1 thế giới về sao lưu cho môi trường ảo hóa (dùng bởi 82% Fortune 500). Backup tự động, khôi phục nhanh, mã hóa dữ liệu.</p>
+
+  <div class="grid grid-2" style="margin-bottom: 18px;">
+    <div>
+      <h3>Tính năng chi tiết</h3>
+      <ul class="clean">
+        <li><span class="li-icon" style="color:var(--orange);">&#9654;</span> <strong>Sao lưu tự động theo lịch:</strong> Cấu hình 1 lần, hệ thống tự chạy hàng ngày/tuần/tháng. Khách hàng không cần làm gì.</li>
+        <li><span class="li-icon" style="color:var(--orange);">&#9654;</span> <strong>Incremental backup:</strong> Lần đầu sao lưu toàn bộ, các lần sau chỉ sao lưu phần thay đổi — tiết kiệm 80-90% thời gian và dung lượng.</li>
+        <li><span class="li-icon" style="color:var(--orange);">&#9654;</span> <strong>Khôi phục nhanh:</strong> Khôi phục toàn bộ VM trong vài phút. Khôi phục từng file/thư mục cụ thể mà không cần restore cả server.</li>
+        <li><span class="li-icon" style="color:var(--orange);">&#9654;</span> <strong>Mã hóa AES-256:</strong> Dữ liệu backup được mã hóa — ngay cả nếu ai đó truy cập được file backup, họ không đọc được nội dung.</li>
+        <li><span class="li-icon" style="color:var(--orange);">&#9654;</span> <strong>Disaster Recovery:</strong> Khi sự cố nghiêm trọng (cháy, hỏng nhiều server), khôi phục toàn bộ hệ thống từ backup.</li>
+        <li><span class="li-icon" style="color:var(--orange);">&#9654;</span> <strong>Retention Policy:</strong> Giữ nhiều phiên bản backup. Ví dụ: 7 bản hàng ngày + 4 bản hàng tuần + 12 bản hàng tháng.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>3 Gói Backup</h3>
+      <div class="card" style="margin-bottom: 10px; border-left: 3px solid var(--orange);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="card-title" style="color: var(--orange);">Basic Backup</div>
+          <span class="badge badge-orange">Phổ biến nhất</span>
+        </div>
+        <div class="card-desc">
+          Sao lưu <strong>1 lần/ngày</strong>, giữ <strong>7 ngày</strong>. Khôi phục toàn bộ VM.<br>
+          <strong>Phù hợp:</strong> Website, blog, ứng dụng nhỏ không có database quan trọng.
+        </div>
+      </div>
+      <div class="card" style="margin-bottom: 10px; border-left: 3px solid var(--orange);">
+        <div class="card-title" style="color: var(--orange);">Business Backup</div>
+        <div class="card-desc">
+          Sao lưu <strong>2 lần/ngày</strong>, giữ <strong>30 ngày</strong>. Khôi phục file lẻ và VM.<br>
+          <strong>Phù hợp:</strong> Database, ERP, email server, CRM — nơi mất 1 ngày dữ liệu là thiệt hại lớn.
+        </div>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--orange);">
+        <div class="card-title" style="color: var(--orange);">Enterprise Backup + DR</div>
+        <div class="card-desc">
+          Sao lưu <strong>liên tục (CDP)</strong>, giữ <strong>1 năm</strong>. Full disaster recovery và compliance.<br>
+          <strong>Phù hợp:</strong> Hệ thống tài chính, y tế, luật — nơi yêu cầu RPO (Recovery Point Objective) gần bằng 0.
+        </div>
+      </div>
+
+      <div class="callout orange" style="margin-top: 12px;">
+        <p><strong>Câu hỏi mở bán hàng hiệu quả nhất:</strong> "Nếu server của anh/chị bị hỏng lúc 2 giờ sáng, mất bao lâu để khôi phục hoàn toàn? Và mất bao nhiêu ngày dữ liệu?" — Hầu hết khách hàng sẽ nhận ra họ cần backup ngay.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 8: GIÁM SÁT & SLA -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN II &middot; 08</span>
+    <h2 style="margin-bottom: 0;">Giám Sát 24/7 & Cam Kết SLA</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 18px;">Hệ thống giám sát tự động kiểm tra hơn 1,000 chỉ số trên mỗi server, mỗi 15 giây. Phát hiện sự cố trước khi khách hàng nhận ra — và cảnh báo đội ngũ trong vài giây.</p>
+
+  <div class="grid grid-4" style="margin-bottom: 18px;">
+    <div class="card stat" style="border-top: 3px solid var(--teal);"><div class="stat-value" style="color: var(--teal);">24/7</div><div class="stat-label">Giám sát liên tục</div></div>
+    <div class="card stat" style="border-top: 3px solid var(--teal);"><div class="stat-value" style="color: var(--teal);">1000+</div><div class="stat-label">Metrics/server</div></div>
+    <div class="card stat" style="border-top: 3px solid var(--teal);"><div class="stat-value" style="color: var(--teal);">&lt;3s</div><div class="stat-label">Độ trễ cảnh báo</div></div>
+    <div class="card stat" style="border-top: 3px solid var(--teal);"><div class="stat-value" style="color: var(--teal);">4 lớp</div><div class="stat-label">Bảo mật tích hợp</div></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 18px;">
+    <div>
+      <h3>Giám sát những gì?</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Chỉ số</th><th>Ngưỡng</th><th>Mức độ</th></tr></thead>
+          <tbody>
+            <tr><td>Server ngừng hoạt động</td><td>Mất kết nối 1 phút</td><td><span class="badge badge-red">Nghiêm trọng</span></td></tr>
+            <tr><td>CPU quá tải</td><td>&gt;85% liên tục 10 phút</td><td><span class="badge badge-orange">Cảnh báo</span></td></tr>
+            <tr><td>RAM cạn kiệt</td><td>&gt;92% đã sử dụng</td><td><span class="badge badge-red">Nghiêm trọng</span></td></tr>
+            <tr><td>Disk sắp đầy</td><td>&lt;10% còn trống</td><td><span class="badge badge-red">Nghiêm trọng</span></td></tr>
+            <tr><td>VM không chạy</td><td>VM dừng &gt;2 phút</td><td><span class="badge badge-red">Nghiêm trọng</span></td></tr>
+            <tr><td>Tấn công DDoS</td><td>Lưu lượng vào &gt;2 Gbps</td><td><span class="badge badge-red">Nghiêm trọng</span></td></tr>
+            <tr><td>Switch ngừng</td><td>SNMP mất kết nối 1 phút</td><td><span class="badge badge-red">Nghiêm trọng</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h3>Quy trình xử lý sự cố</h3>
+      <div class="flow-step" style="margin-bottom: 6px; border-left: 3px solid var(--accent);">
+        <strong style="color: var(--accent);">Bước 1:</strong> Hệ thống tự phát hiện bất thường (quét mỗi 15 giây)
+      </div>
+      <div class="flow-arrow">&#9660;</div>
+      <div class="flow-step" style="margin-bottom: 6px; border-left: 3px solid var(--orange);">
+        <strong style="color: var(--orange);">Bước 2:</strong> Cảnh báo gửi Telegram cho đội kỹ thuật (trong &lt;3 giây)
+      </div>
+      <div class="flow-arrow">&#9660;</div>
+      <div class="flow-step" style="margin-bottom: 6px; border-left: 3px solid var(--green);">
+        <strong style="color: var(--green);">Bước 3:</strong> Kỹ thuật viên tiếp nhận, phân tích nguyên nhân, xử lý sự cố
+      </div>
+      <div class="flow-arrow">&#9660;</div>
+      <div class="flow-step" style="border-left: 3px solid var(--green);">
+        <strong style="color: var(--green);">Bước 4:</strong> Hệ thống xác nhận "Đã khắc phục" và gửi thông báo resolved
+      </div>
+
+      <div class="callout green" style="margin-top: 14px;">
+        <p><strong>Cam kết SLA:</strong> "Chúng tôi giám sát server 24/7. Khi có vấn đề, đội ngũ nhận cảnh báo trong 3 giây — không phải đợi anh/chị gọi báo lỗi. Cam kết uptime 99.9% — tức là tối đa ~8.7 giờ downtime cả năm."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 9: 6 ĐIỂM BÁN HÀNG CỐT LÕI -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN III &middot; 09</span>
+    <h2 style="margin-bottom: 0;">6 Điểm Bán Hàng Cốt Lõi</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 18px;">Đây là 6 lý do chính khiến khách hàng nên chọn EcoCloud. Mỗi điểm kèm câu nói gợi ý — hãy dùng ngôn ngữ tự nhiên của bạn, đừng đọc nguyên văn.</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+    <div class="sell-point">
+      <div class="num-circle">1</div>
+      <div>
+        <div class="sp-title">Dữ Liệu Nằm Tại Việt Nam</div>
+        <div class="sp-desc">Toàn bộ dữ liệu lưu trữ trong nước. Tuân thủ Luật An ninh mạng 2018 và Nghị định 13/2023 về bảo vệ dữ liệu cá nhân. Đặc biệt quan trọng với ngành tài chính, y tế, giáo dục.</div>
+        <div class="sp-talk">&#128172; "Dữ liệu không ra khỏi Việt Nam. Với nhiều ngành, đây là yêu cầu bắt buộc theo luật."</div>
+      </div>
+    </div>
+    <div class="sell-point">
+      <div class="num-circle">2</div>
+      <div>
+        <div class="sp-title">Chi Phí Dự Đoán Được</div>
+        <div class="sp-desc">Giá cố định hàng tháng. Không phát sinh phí bandwidth, data transfer, API call, hay egress như AWS/Azure/GCP. Khách hàng biết chính xác chi phí trước khi dùng.</div>
+        <div class="sp-talk">&#128172; "Với AWS, hóa đơn tháng có thể gấp 2-3 lần vì phí ẩn. Chúng tôi — giá nào là giá đó, không bất ngờ."</div>
+      </div>
+    </div>
+    <div class="sell-point">
+      <div class="num-circle">3</div>
+      <div>
+        <div class="sp-title">Bảo Mật 4 Lớp Enterprise</div>
+        <div class="sp-desc">SIEM + IDS + Quét Malware + Tuân thủ quốc tế. Mức bảo mật tương đương hệ thống on-premise của ngân hàng và tổ chức tài chính lớn.</div>
+        <div class="sp-talk">&#128172; "VPS thường chỉ có firewall cơ bản. Chúng tôi có 4 lớp bảo mật giám sát 24/7."</div>
+      </div>
+    </div>
+    <div class="sell-point">
+      <div class="num-circle">4</div>
+      <div>
+        <div class="sp-title">Tài Nguyên Riêng Biệt, Không Overselling</div>
+        <div class="sp-desc">KVM full hardware virtualization. CPU và RAM cấp phát riêng, không bị chia sẻ. Khác với nhiều nhà cung cấp bán vượt mức (overselling) — bán 100% CPU nhưng chỉ có 50%.</div>
+        <div class="sp-talk">&#128172; "Server của bạn không bị chậm vì người khác dùng nhiều. Tài nguyên là của bạn 100%."</div>
+      </div>
+    </div>
+    <div class="sell-point">
+      <div class="num-circle">5</div>
+      <div>
+        <div class="sp-title">Storage Tự Phục Hồi, Không Bao Giờ Mất Dữ Liệu</div>
+        <div class="sp-desc">Ceph distributed storage — 3 bản sao trên 3 server vật lý khác nhau. Ổ cứng hỏng? Hệ thống tự tạo bản sao mới. Không downtime, không mất dữ liệu.</div>
+        <div class="sp-talk">&#128172; "Hosting thường — hỏng ổ cứng là mất hết. Chúng tôi — dữ liệu luôn có 3 bản sao."</div>
+      </div>
+    </div>
+    <div class="sell-point">
+      <div class="num-circle">6</div>
+      <div>
+        <div class="sp-title">Hỗ Trợ Tiếng Việt Trực Tiếp</div>
+        <div class="sp-desc">Đội ngũ kỹ thuật EcoCloud tại Việt Nam trực tiếp vận hành. Không có rào cản ngôn ngữ, không cần chờ support quốc tế ở timezone khác. Thời gian phản hồi nhanh hơn đáng kể.</div>
+        <div class="sp-talk">&#128172; "Gọi điện — trả lời tiếng Việt. Không phải viết ticket tiếng Anh rồi chờ 24 giờ."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 10: SO SÁNH CẠNH TRANH -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN III &middot; 10</span>
+    <h2 style="margin-bottom: 0;">So Sánh Cạnh Tranh</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 18px;">Bảng so sánh chi tiết giữa EcoCloud, public cloud quốc tế và VPS Việt Nam thông thường. Dùng bảng này khi khách hàng hỏi "tại sao không dùng AWS?" hoặc "VPS khác rẻ hơn mà?".</p>
+
+  <div class="table-wrap" style="margin-bottom: 18px;">
+    <table>
+      <thead>
+        <tr><th style="width:18%;">Tiêu chí</th><th style="width:28%; color: var(--accent);">EcoCloud</th><th style="width:27%;">AWS / Azure / GCP</th><th style="width:27%;">VPS VN thông thường</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Vị trí dữ liệu</strong></td><td style="color: var(--green);">&#10003; Tại Việt Nam, tuân thủ luật</td><td>&#9888; Server nước ngoài (Singapore, US)</td><td>&#10003; Tại Việt Nam</td></tr>
+        <tr><td><strong>Mô hình giá</strong></td><td style="color: var(--green);">&#10003; Cố định/tháng, không phí ẩn</td><td>&#9888; Biến động: egress $0.09/GB, API call, transfer</td><td>&#10003; Cố định</td></tr>
+        <tr><td><strong>Bảo mật</strong></td><td style="color: var(--green);">&#10003; 4 lớp (SIEM + IDS + YARA + Compliance)</td><td>&#10003; Có nhưng tính phí riêng (GuardDuty, Inspector...)</td><td>&#10060; Chỉ firewall cơ bản</td></tr>
+        <tr><td><strong>Giám sát</strong></td><td style="color: var(--green);">&#10003; 1000+ metrics, alert &lt;3s</td><td>&#10003; CloudWatch (trả phí theo metric + alarm)</td><td>&#10060; Rất cơ bản hoặc không có</td></tr>
+        <tr><td><strong>Lưu trữ</strong></td><td style="color: var(--green);">&#10003; Ceph 3x replication, tự phục hồi</td><td>&#10003; EBS/S3 (phí theo GB + requests)</td><td>&#9888; Thường 1 disk, không replication</td></tr>
+        <tr><td><strong>Sao lưu</strong></td><td style="color: var(--green);">&#10003; Veeam enterprise-grade</td><td>&#10003; AWS Backup (phí riêng theo GB)</td><td>&#9888; Thủ công hoặc rất cơ bản</td></tr>
+        <tr><td><strong>Hỗ trợ</strong></td><td style="color: var(--green);">&#10003; Tiếng Việt, trực tiếp, nhanh</td><td>&#9888; Tiếng Anh, $29-100/tháng cho premium support</td><td>&#10003; Tiếng Việt</td></tr>
+        <tr><td><strong>Tài nguyên</strong></td><td style="color: var(--green);">&#10003; Dedicated KVM, không oversell</td><td>&#10003; Dedicated (tùy gói, có thể shared)</td><td>&#9888; Nhiều nơi overselling</td></tr>
+        <tr><td><strong>Vendor lock-in</strong></td><td style="color: var(--green);">&#10003; Standard Linux, dễ migrate</td><td>&#9888; Phụ thuộc ecosystem riêng (Lambda, DynamoDB...)</td><td>&#10003; Standard Linux</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <p><strong>Tóm tắt khi nói với khách:</strong> "EcoCloud kết hợp ưu điểm của cả hai thế giới: chi phí ổn định và hỗ trợ tiếng Việt như VPS trong nước, nhưng có bảo mật và giám sát cấp enterprise như AWS. Đây là lựa chọn tối ưu cho doanh nghiệp Việt Nam cần cả chất lượng lẫn hiệu quả chi phí."</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 11: ĐỐI TƯỢNG KHÁCH HÀNG -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN III &middot; 11</span>
+    <h2 style="margin-bottom: 0;">Đối Tượng Khách Hàng</h2>
+  </div>
+
+  <div class="grid grid-2" style="gap: 14px;">
+    <div class="card" style="border-left: 4px solid var(--green);">
+      <div class="card-title" style="color: var(--green);">Doanh Nghiệp Vừa & Nhỏ (SMB)</div>
+      <div class="card-desc">
+        <strong>Nhu cầu điển hình:</strong> Website công ty, email server, ERP/CRM nội bộ, quản lý kho<br>
+        <strong>Vấn đề thường gặp:</strong> Không đủ nhân sự IT để quản lý và bảo mật server. Lo lắng về mất dữ liệu nhưng chưa có giải pháp backup.<br>
+        <strong>Bán gì:</strong> Cloud Server + Basic Backup (mặc định khuyến khích)<br>
+        <strong>Cơ hội upsell:</strong> Cloud Security khi họ đề cập đến lo ngại bảo mật, hoặc khi nghe tin về các vụ tấn công mạng
+      </div>
+      <div class="callout green" style="margin: 10px 0 0;">
+        <p><strong>Pitch:</strong> "Chúng tôi lo toàn bộ vận hành và bảo mật server. Anh/chị chỉ cần tập trung vào kinh doanh."</p>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--accent);">
+      <div class="card-title" style="color: var(--accent);">Doanh Nghiệp Lớn (Enterprise)</div>
+      <div class="card-desc">
+        <strong>Nhu cầu điển hình:</strong> Hệ thống mission-critical, compliance bắt buộc, dữ liệu nhạy cảm<br>
+        <strong>Vấn đề thường gặp:</strong> Public cloud đắt đỏ ở quy mô lớn, chưa tuân thủ đầy đủ Luật An ninh mạng VN. Cần audit trail và báo cáo bảo mật.<br>
+        <strong>Bán gì:</strong> Cloud Server + Full Security + Enterprise Backup<br>
+        <strong>Cơ hội upsell:</strong> Dedicated cluster, báo cáo compliance định kỳ, managed services
+      </div>
+      <div class="callout" style="margin: 10px 0 0;">
+        <p><strong>Pitch:</strong> "Hạ tầng enterprise-grade với chi phí tối ưu, tuân thủ Luật An ninh mạng VN, có đầy đủ audit trail."</p>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--purple);">
+      <div class="card-title" style="color: var(--purple);">Startup & Công Ty Công Nghệ</div>
+      <div class="card-desc">
+        <strong>Nhu cầu điển hình:</strong> Dev/staging environment, CI/CD pipeline, quick scaling khi user tăng<br>
+        <strong>Vấn đề thường gặp:</strong> Dùng AWS/GCP lúc đầu rẻ, nhưng khi product tăng trưởng thì phí bandwidth và compute leo thang chóng mặt.<br>
+        <strong>Bán gì:</strong> Cloud Server + S3-compatible Storage<br>
+        <strong>Cơ hội upsell:</strong> Thêm VM khi scale, Cloud Security, backup cho database
+      </div>
+      <div class="callout purple" style="margin: 10px 0 0;">
+        <p><strong>Pitch:</strong> "Scale mà không lo hóa đơn bất ngờ. Phí cố định, bandwidth thoải mái, API S3-compatible."</p>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--orange);">
+      <div class="card-title" style="color: var(--orange);">Ngành Đặc Thù (Tài chính, Y tế, Luật, Chính phủ)</div>
+      <div class="card-desc">
+        <strong>Nhu cầu điển hình:</strong> Compliance bắt buộc (PCI-DSS, HIPAA), chủ quyền dữ liệu, audit trail<br>
+        <strong>Vấn đề thường gặp:</strong> Pháp luật bắt buộc lưu dữ liệu trong nước. Cần bằng chứng tuân thủ cho kiểm toán. Yêu cầu bảo mật cao hơn bình thường.<br>
+        <strong>Bán gì:</strong> Full package (Server + Security + Backup + Storage + Compliance Report)<br>
+        <strong>Cơ hội upsell:</strong> Báo cáo compliance định kỳ, dedicated cluster riêng
+      </div>
+      <div class="callout orange" style="margin: 10px 0 0;">
+        <p><strong>Pitch:</strong> "SIEM log toàn bộ truy cập, OpenSCAP kiểm tra chuẩn CIS/PCI, báo cáo compliance cho kiểm toán."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 12: GÓI DỊCH VỤ -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN III &middot; 12</span>
+    <h2 style="margin-bottom: 0;">Gói Dịch Vụ</h2>
+  </div>
+
+  <div class="grid grid-3" style="margin-bottom: 16px;">
+    <!-- GÓI CƠ BẢN -->
+    <div class="tier">
+      <div class="tier-header">
+        <div class="tier-name" style="color: var(--accent);">CƠ BẢN</div>
+        <div class="tier-target">Phù hợp doanh nghiệp mới thành lập, đáp ứng nhu cầu cơ bản: website, email, lưu trữ, chia sẻ...</div>
+      </div>
+      <div class="tier-body">
+        <div style="text-align: center; padding: 12px 0 16px; border-bottom: 1px solid var(--border);">
+          <span style="font-family: 'Merriweather', serif; font-size: 32px; font-weight: 700; color: var(--accent);">300,000</span>
+          <span style="font-size: 14px; color: var(--text2);"> ₫ / Tháng</span>
+        </div>
+        <div style="padding-top: 14px;">
+          <div class="tier-item"><span class="check">&#9881;</span> 2 vCore CPU</div>
+          <div class="tier-item"><span class="check">&#9776;</span> 2 GB RAM</div>
+          <div class="tier-item"><span class="check">&#128190;</span> 40 GB SSD Storage</div>
+          <div class="tier-item"><span class="check">&#127760;</span> 1 public IPv4</div>
+          <div class="tier-item"><span class="check">&#128268;</span> Băng thông: 300 Mbps</div>
+          <div class="tier-item"><span class="check">&#128296;</span> Quản trị máy chủ với aaPanel</div>
+          <div class="tier-item"><span class="check">&#128222;</span> Hỗ trợ cơ bản 24/7</div>
+        </div>
+        <hr class="divider">
+        <div class="tier-item"><span class="addon">+</span> <span style="color: var(--orange);">Backup (add-on)</span></div>
+        <div class="tier-item"><span class="addon">+</span> <span style="color: var(--orange);">Thêm Storage (add-on)</span></div>
+      </div>
+    </div>
+
+    <!-- GÓI NÂNG CAO -->
+    <div class="tier featured">
+      <div class="tier-header">
+        <div class="tier-name" style="color: var(--accent);">NÂNG CAO <span class="badge badge-accent" style="margin-left: 6px;">Phổ biến nhất</span></div>
+        <div class="tier-target">Phù hợp doanh nghiệp phát triển năng động và hướng về tự động hóa các tác vụ công việc với n8n, GenAI</div>
+      </div>
+      <div class="tier-body">
+        <div style="text-align: center; padding: 12px 0 16px; border-bottom: 1px solid var(--border);">
+          <span style="font-family: 'Merriweather', serif; font-size: 32px; font-weight: 700; color: var(--accent);">900,000</span>
+          <span style="font-size: 14px; color: var(--text2);"> ₫ / Tháng</span>
+        </div>
+        <div style="padding-top: 14px;">
+          <div class="tier-item"><span class="check">&#9881;</span> 6 vCore CPU</div>
+          <div class="tier-item"><span class="check">&#9776;</span> 8 GB RAM</div>
+          <div class="tier-item"><span class="check">&#128190;</span> 120 GB SSD Storage</div>
+          <div class="tier-item"><span class="check">&#127760;</span> 1 public IPv4</div>
+          <div class="tier-item"><span class="check">&#128268;</span> Băng thông: 300 Mbps</div>
+          <div class="tier-item"><span class="check">&#128296;</span> Quản trị máy chủ với aaPanel</div>
+          <div class="tier-item"><span class="check">&#128222;</span> Hỗ trợ kỹ thuật 24/7</div>
+        </div>
+        <hr class="divider">
+        <div class="tier-item"><span class="addon">+</span> <span style="color: var(--orange);">Cloud Security (add-on)</span></div>
+        <div class="tier-item"><span class="addon">+</span> <span style="color: var(--orange);">Backup tự động (add-on)</span></div>
+      </div>
+    </div>
+
+    <!-- GÓI ENTERPRISE -->
+    <div class="tier" style="border-color: var(--accent); background: linear-gradient(180deg, var(--accent-light) 0%, var(--card) 40%);">
+      <div class="tier-header" style="background: var(--accent); color: #fff; border-bottom: none;">
+        <div class="tier-name" style="color: #fff;">ENTERPRISE</div>
+        <div class="tier-target" style="color: rgba(255,255,255,0.85);">Phù hợp doanh nghiệp hoạt động online mạnh mẽ với nhiều chức năng tự động hóa Multi AI Agents</div>
+      </div>
+      <div class="tier-body">
+        <div style="text-align: center; padding: 12px 0 16px; border-bottom: 1px solid var(--border);">
+          <span style="font-family: 'Merriweather', serif; font-size: 32px; font-weight: 700; color: var(--accent);">1,400,000</span>
+          <span style="font-size: 14px; color: var(--text2);"> ₫ / Tháng</span>
+        </div>
+        <div style="padding-top: 14px;">
+          <div class="tier-item"><span class="check">&#9881;</span> <strong>8 vCore CPU</strong></div>
+          <div class="tier-item"><span class="check">&#9776;</span> <strong>12 GB RAM</strong></div>
+          <div class="tier-item"><span class="check">&#128190;</span> <strong>240 GB SSD Storage</strong></div>
+          <div class="tier-item"><span class="check">&#127760;</span> 1 public IPv4</div>
+          <div class="tier-item"><span class="check">&#128268;</span> <strong>Băng thông: 300 Mbps</strong></div>
+          <div class="tier-item"><span class="check">&#128296;</span> <strong>Quản trị máy chủ với aaPanel</strong></div>
+          <div class="tier-item"><span class="check">&#128222;</span> <strong>Hỗ trợ kỹ thuật 24/7</strong></div>
+        </div>
+        <hr class="divider">
+        <div class="tier-item"><span class="addon">+</span> <span style="color: var(--orange);">Cloud Security 4 lớp (add-on)</span></div>
+        <div class="tier-item"><span class="addon">+</span> <span style="color: var(--orange);">Enterprise Backup + DR (add-on)</span></div>
+        <div class="tier-item"><span class="addon">+</span> <span style="color: var(--orange);">Compliance Report (add-on)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Lưu ý:</strong> Tất cả gói đều bao gồm băng thông 300 Mbps, quản trị aaPanel và 1 IP công cộng. Khách hàng có thể nâng cấp gói hoặc thêm tài nguyên (CPU, RAM, SSD) bất kỳ lúc nào. Giá trên chưa bao gồm VAT 10% và các add-on bổ sung.</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 13: 2 HÌNH THỨC TÍNH GIÁ -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN IV &middot; 13</span>
+    <h2 style="margin-bottom: 0;">2 Hình Thức Tính Giá Cloud Server</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 16px;">EcoCloud cung cấp 2 hình thức tính giá linh hoạt, phù hợp với mọi quy mô và nhu cầu sử dụng của khách hàng.</p>
+
+  <div class="grid grid-2" style="margin-bottom: 16px;">
+    <!-- ĐỐI SOÁT -->
+    <div class="card" style="border-top: 4px solid var(--accent);">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <span class="badge badge-accent" style="font-size: 11px; padding: 5px 14px;">HÌNH THỨC 1</span>
+        <div class="card-title" style="color: var(--accent); margin-bottom: 0;">Đối Soát (Pay-as-you-go)</div>
+      </div>
+      <div class="card-desc" style="margin-bottom: 14px;">
+        <strong>Cách hoạt động:</strong> Thỏa thuận đơn giá CPU, RAM, SSD với khách hàng. Cuối mỗi tháng, EcoCloud đối soát (đo lường) tài nguyên thực tế đã sử dụng và tính phí dựa trên mức dùng thực tế.
+      </div>
+      <ul class="clean" style="font-size: 12px; margin-bottom: 14px;">
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Linh hoạt tối đa</strong> — tăng/giảm tài nguyên tự do theo nhu cầu</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Chỉ trả cho những gì dùng</strong> — không lãng phí tài nguyên</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Phù hợp workload biến động</strong> — dev/test, seasonal, startup đang scale</li>
+      </ul>
+      <div style="background: var(--accent-light); padding: 12px 14px; border-radius: 6px; font-size: 12px; line-height: 1.7;">
+        <strong style="color: var(--accent);">Quy trình hàng tháng:</strong><br>
+        1. Khách dùng tài nguyên linh hoạt trong tháng<br>
+        2. Cuối tháng, hệ thống đo lường usage thực tế<br>
+        3. EcoCloud gửi bảng đối soát chi tiết cho khách<br>
+        4. Khách xác nhận → xuất hóa đơn → thanh toán
+      </div>
+    </div>
+
+    <!-- TRỌN GÓI -->
+    <div class="card" style="border-top: 4px solid var(--green);">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <span class="badge badge-green" style="font-size: 11px; padding: 5px 14px;">HÌNH THỨC 2</span>
+        <div class="card-title" style="color: var(--green); margin-bottom: 0;">Trọn Gói (Pre-defined)</div>
+      </div>
+      <div class="card-desc" style="margin-bottom: 14px;">
+        <strong>Cách hoạt động:</strong> Ký hợp đồng với cấu hình cố định (CPU, RAM, SSD). Giá cố định hàng tháng — không đổi bất kể dùng ít hay nhiều. Khách sử dụng đúng tài nguyên đã cam kết.
+      </div>
+      <ul class="clean" style="font-size: 12px; margin-bottom: 14px;">
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Chi phí cố định</strong> — dễ lập ngân sách, không bất ngờ</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Tài nguyên đảm bảo 100%</strong> — luôn sẵn sàng, không tranh chấp</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Phù hợp workload ổn định</strong> — production, ERP, database, email server</li>
+      </ul>
+      <div style="background: var(--green-light); padding: 12px 14px; border-radius: 6px; font-size: 12px; line-height: 1.7;">
+        <strong style="color: var(--green);">Quy trình ký hợp đồng:</strong><br>
+        1. Khảo sát nhu cầu → tư vấn cấu hình phù hợp<br>
+        2. Thỏa thuận cấu hình &amp; giá cố định<br>
+        3. Ký hợp đồng → triển khai VM<br>
+        4. Thanh toán cố định hàng tháng / quý / năm
+      </div>
+    </div>
+  </div>
+
+  <!-- BẢNG SO SÁNH 2 HÌNH THỨC -->
+  <div class="table-wrap" style="margin-bottom: 16px;">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 22%;">Tiêu chí</th>
+          <th style="width: 39%; color: var(--accent);">Đối Soát (Pay-as-you-go)</th>
+          <th style="width: 39%; color: var(--green);">Trọn Gói (Pre-defined)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Thanh toán</strong></td><td>Theo usage thực tế mỗi tháng</td><td>Cố định theo hợp đồng</td></tr>
+        <tr><td><strong>Tài nguyên</strong></td><td>Co giãn linh hoạt, tăng/giảm tự do</td><td>Cố định theo cam kết, đảm bảo 100%</td></tr>
+        <tr><td><strong>Hợp đồng</strong></td><td>Thỏa thuận đơn giá, không bắt buộc thời hạn</td><td>Ký hợp đồng với cấu hình &amp; thời hạn rõ ràng</td></tr>
+        <tr><td><strong>Ưu đãi giá</strong></td><td>Đơn giá Phổ thông hoặc VIP (theo volume)</td><td>Đơn giá VIP khi cam kết dài hạn (6+ tháng)</td></tr>
+        <tr><td><strong>Phù hợp nhất</strong></td><td>Startup, dev/test, workload biến động, seasonal</td><td>Enterprise, production, ERP, database, workload ổn định</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <p><strong>Mẹo tư vấn:</strong> Nếu khách chưa rõ nhu cầu hoặc mới bắt đầu → đề xuất <strong>Đối soát</strong> để dùng thử linh hoạt. Nếu khách đã rõ workload ổn định hoặc cần ngân sách cố định → đề xuất <strong>Trọn gói</strong> với giá VIP ưu đãi hơn.</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 14: BẢNG GIÁ & VÍ DỤ TÍNH GIÁ -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN IV &middot; 14</span>
+    <h2 style="margin-bottom: 0;">Bảng Giá & Ví Dụ Tính Giá</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 16px;">Đơn giá tài nguyên áp dụng cho cả 2 hình thức. Có 2 mức giá: Phổ thông (mặc định) và VIP (khách hàng lớn, hợp đồng dài hạn). Tất cả giá chưa bao gồm VAT 10%.</p>
+
+  <!-- BẢNG ĐƠN GIÁ -->
+  <div class="grid grid-2" style="margin-bottom: 16px;">
+    <div>
+      <h3 style="color: var(--accent);">Đơn giá Phổ thông</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tài nguyên</th><th>Đơn giá / Tháng</th><th>Đơn giá / Ngày</th><th>Đơn giá / Giờ</th></tr></thead>
+          <tbody>
+            <tr><td><strong>CPU (Core)</strong></td><td style="color: var(--accent); font-weight: 700;">80,000 ₫</td><td>2,667 ₫</td><td>111 ₫</td></tr>
+            <tr><td><strong>RAM (GB)</strong></td><td style="color: var(--accent); font-weight: 700;">80,000 ₫</td><td>2,667 ₫</td><td>111 ₫</td></tr>
+            <tr><td><strong>SSD (GB)</strong></td><td style="color: var(--accent); font-weight: 700;">6,000 ₫</td><td>200 ₫</td><td>8 ₫</td></tr>
+            <tr><td><strong>IP tĩnh (IPv4)</strong></td><td style="color: var(--accent); font-weight: 700;">100,000 ₫</td><td>3,333 ₫</td><td>139 ₫</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h3 style="color: var(--green);">Đơn giá VIP <span class="badge badge-green" style="margin-left: 6px;">Giảm 25-50%</span></h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tài nguyên</th><th>Đơn giá / Tháng</th><th>Đơn giá / Ngày</th><th>Đơn giá / Giờ</th></tr></thead>
+          <tbody>
+            <tr><td><strong>CPU (Core)</strong></td><td style="color: var(--green); font-weight: 700;">60,000 ₫</td><td>2,000 ₫</td><td>83 ₫</td></tr>
+            <tr><td><strong>RAM (GB)</strong></td><td style="color: var(--green); font-weight: 700;">60,000 ₫</td><td>2,000 ₫</td><td>83 ₫</td></tr>
+            <tr><td><strong>SSD (GB)</strong></td><td style="color: var(--green); font-weight: 700;">4,000 ₫</td><td>133 ₫</td><td>6 ₫</td></tr>
+            <tr><td><strong>IP tĩnh (IPv4)</strong></td><td style="color: var(--green); font-weight: 700;">100,000 ₫</td><td>3,333 ₫</td><td>139 ₫</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VÍ DỤ 2 HÌNH THỨC -->
+  <div class="grid grid-2" style="margin-bottom: 16px;">
+    <!-- VÍ DỤ ĐỐI SOÁT -->
+    <div class="card" style="border-top: 4px solid var(--accent);">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+        <span class="badge badge-accent">Đối Soát</span>
+        <div class="card-title" style="margin-bottom: 0;">Startup — Tháng 3/2026</div>
+      </div>
+      <div class="card-desc" style="margin-bottom: 10px; font-size: 12px;">Đơn giá thỏa thuận: <strong>Phổ thông</strong>. Cuối tháng đối soát usage thực tế:</div>
+      <div class="table-wrap" style="margin-bottom: 10px;">
+        <table style="font-size: 12px;">
+          <thead><tr><th>Tài nguyên</th><th>Usage thực tế</th><th>Thành tiền</th></tr></thead>
+          <tbody>
+            <tr><td>CPU</td><td>Trung bình <strong>4 cores</strong></td><td style="text-align: right;">320,000 ₫</td></tr>
+            <tr><td>RAM</td><td>Trung bình <strong>6 GB</strong></td><td style="text-align: right;">480,000 ₫</td></tr>
+            <tr><td>SSD</td><td>Sử dụng <strong>80 GB</strong></td><td style="text-align: right;">480,000 ₫</td></tr>
+            <tr><td>IP</td><td>1 IP</td><td style="text-align: right;">100,000 ₫</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="background: var(--bg2); border-radius: 6px; padding: 10px 14px; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between;"><span>Trước VAT:</span><span style="font-weight: 600;">1,380,000 ₫</span></div>
+        <div style="display: flex; justify-content: space-between;"><span>VAT 10%:</span><span>138,000 ₫</span></div>
+        <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px;">
+          <span style="font-weight: 700;">Tổng tháng 3:</span>
+          <span style="font-weight: 700; color: var(--accent); font-size: 15px;">1,518,000 ₫</span>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--text3); margin-top: 8px; font-style: italic;">* Tháng sau có thể khác — tùy usage thực tế</div>
+    </div>
+
+    <!-- VÍ DỤ TRỌN GÓI -->
+    <div class="card" style="border-top: 4px solid var(--green);">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+        <span class="badge badge-green">Trọn Gói</span>
+        <div class="card-title" style="margin-bottom: 0;">Doanh nghiệp vừa — HĐ 12 tháng</div>
+      </div>
+      <div class="card-desc" style="margin-bottom: 10px; font-size: 12px;">Hợp đồng cấu hình cố định, đơn giá <strong>VIP</strong> (cam kết 12 tháng):</div>
+      <div class="table-wrap" style="margin-bottom: 10px;">
+        <table style="font-size: 12px;">
+          <thead><tr><th>Tài nguyên</th><th>Cam kết</th><th>Thành tiền</th></tr></thead>
+          <tbody>
+            <tr><td>CPU</td><td><strong>8 cores</strong> cố định</td><td style="text-align: right;">480,000 ₫</td></tr>
+            <tr><td>RAM</td><td><strong>16 GB</strong> cố định</td><td style="text-align: right;">960,000 ₫</td></tr>
+            <tr><td>SSD</td><td><strong>200 GB</strong> cố định</td><td style="text-align: right;">800,000 ₫</td></tr>
+            <tr><td>IP</td><td>1 IP</td><td style="text-align: right;">100,000 ₫</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="background: var(--bg2); border-radius: 6px; padding: 10px 14px; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between;"><span>Trước VAT:</span><span style="font-weight: 600;">2,340,000 ₫</span></div>
+        <div style="display: flex; justify-content: space-between;"><span>VAT 10%:</span><span>234,000 ₫</span></div>
+        <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px;">
+          <span style="font-weight: 700;">Cố định / tháng:</span>
+          <span style="font-weight: 700; color: var(--green); font-size: 15px;">2,574,000 ₫</span>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--text3); margin-top: 8px; font-style: italic;">* Giá cố định mỗi tháng trong suốt hợp đồng</div>
+    </div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="callout">
+      <p><strong>GPU Server (Add-on):</strong> NVIDIA RTX 3060 — <strong style="color: var(--purple);">2,500,000 ₫/tháng</strong> (3,720 ₫/giờ). Áp dụng cho cả 2 hình thức. Giá VIP cần phê duyệt quản lý.</p>
+    </div>
+    <div class="callout green">
+      <p><strong>Mẹo báo giá:</strong> Luôn hỏi nhu cầu trước, không phải đưa bảng giá. Gợi ý: Website (2-4 CPU, 4-8GB), Database (4-8 CPU, 16-32GB), ERP (8-16 CPU, 32-64GB). Đề xuất <strong>Đối soát</strong> cho khách mới, <strong>Trọn gói VIP</strong> cho khách cam kết dài hạn.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 15: GIÁ BACKUP, STORAGE & ADD-ON -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN IV &middot; 15</span>
+    <h2 style="margin-bottom: 0;">Giá Backup, Storage & Add-on</h2>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 16px;">
+    <div>
+      <h3 style="color: var(--orange);">Cloud Backup (Veeam)</h3>
+      <div class="table-wrap" style="margin-bottom: 12px;">
+        <table>
+          <thead><tr><th>Tài nguyên</th><th>Đơn giá / Tháng</th><th>Ghi chú</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Backup HDD (1 GB)</strong></td><td style="color: var(--orange); font-weight: 700;">600 ₫</td><td>Lưu trữ HDD dung lượng lớn</td></tr>
+            <tr><td><strong>Backup HDD (1 TB)</strong></td><td style="color: var(--orange); font-weight: 700;">600,000 ₫</td><td>= 600 ₫ × 1,024 GB</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="border-left: 3px solid var(--orange); margin-bottom: 12px;">
+        <div class="card-title" style="font-size: 13px;">Ví dụ tính giá Backup</div>
+        <div class="card-desc">
+          Khách có VM dùng 200GB disk → cần backup ~200GB:<br>
+          <strong>200 GB × 600 ₫ = 120,000 ₫/tháng</strong> (chưa VAT)<br>
+          Với VAT: <strong style="color: var(--orange);">132,000 ₫/tháng</strong><br><br>
+          Khách có 1TB data → <strong style="color: var(--orange);">660,000 ₫/tháng</strong> (gồm VAT)
+        </div>
+      </div>
+
+      <div class="callout orange">
+        <p><strong>Quy tắc ước lượng nhanh:</strong> Dung lượng backup ≈ dung lượng disk VM đang dùng. Nếu khách có VM 100GB SSD thì backup cũng cần ~100GB. Incremental backup sau lần đầu chỉ lưu phần thay đổi nên thực tế tốn ít hơn.</p>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="color: var(--purple);">Cloud Storage (Ceph — Thêm disk)</h3>
+      <div class="table-wrap" style="margin-bottom: 12px;">
+        <table>
+          <thead><tr><th>Loại</th><th>Đơn giá / GB / Tháng</th><th>Ghi chú</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SSD Block Storage</strong></td><td style="color: var(--purple); font-weight: 700;">6,000 ₫</td><td>Giá phổ thông (gắn thêm vào VM)</td></tr>
+            <tr><td><strong>SSD Block Storage (VIP)</strong></td><td style="color: var(--purple); font-weight: 700;">4,000 ₫</td><td>Khách VIP / hợp đồng dài hạn</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="border-left: 3px solid var(--purple); margin-bottom: 12px;">
+        <div class="card-title" style="font-size: 13px;">Ví dụ tính giá Storage thêm</div>
+        <div class="card-desc">
+          Khách cần thêm 500GB SSD cho database:<br>
+          <strong>Phổ thông: 500 × 6,000 = 3,000,000 ₫/tháng</strong><br>
+          <strong>VIP: 500 × 4,000 = 2,000,000 ₫/tháng</strong><br>
+          (Cộng thêm VAT 10%)
+        </div>
+      </div>
+
+      <h3 style="color: var(--accent); margin-top: 16px;">Tổng hợp đơn giá nhanh</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Dịch vụ</th><th>Đơn vị</th><th>Phổ thông</th><th>VIP</th></tr></thead>
+          <tbody>
+            <tr><td>CPU</td><td>core/tháng</td><td><strong>80,000 ₫</strong></td><td><strong>60,000 ₫</strong></td></tr>
+            <tr><td>RAM</td><td>GB/tháng</td><td><strong>80,000 ₫</strong></td><td><strong>60,000 ₫</strong></td></tr>
+            <tr><td>SSD</td><td>GB/tháng</td><td><strong>6,000 ₫</strong></td><td><strong>4,000 ₫</strong></td></tr>
+            <tr><td>IP tĩnh</td><td>IP/tháng</td><td><strong>100,000 ₫</strong></td><td><strong>100,000 ₫</strong></td></tr>
+            <tr><td>Backup</td><td>GB/tháng</td><td colspan="2" style="text-align: center;"><strong>600 ₫</strong></td></tr>
+            <tr><td>GPU RTX 3060</td><td>card/tháng</td><td colspan="2" style="text-align: center;"><strong>2,500,000 ₫</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Tất cả giá trên chưa bao gồm VAT 10%.</strong> Cloud Security và Managed Services hiện tính theo thỏa thuận riêng với từng khách hàng — liên hệ quản lý để có báo giá cụ thể.</p>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 16: ADD-ON & UPSELL -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN V &middot; 16</span>
+    <h2 style="margin-bottom: 0;">Add-on & Chiến Lược Upsell</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 16px;">Mỗi add-on là cơ hội tăng doanh thu. Cột cuối cùng là câu hỏi gợi mở để khách tự nhận ra nhu cầu — hiệu quả hơn nhiều so với chào bán trực tiếp.</p>
+
+  <div class="table-wrap" style="margin-bottom: 18px;">
+    <table>
+      <thead><tr><th>Add-on</th><th>Mô tả</th><th>Đối tượng phù hợp</th><th>Câu hỏi gợi mở</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-green">Cloud Security</span></td>
+          <td>4 lớp bảo mật: SIEM, IDS, quét malware, compliance check. Giám sát 24/7, cảnh báo realtime.</td>
+          <td>Tất cả, đặc biệt tài chính, y tế, e-commerce</td>
+          <td><em>"Anh/chị có biết ai đang cố truy cập server của mình không?"</em></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-orange">Cloud Backup</span></td>
+          <td>Veeam sao lưu tự động + khôi phục nhanh + disaster recovery. Mã hóa AES-256.</td>
+          <td>Tất cả (nên mặc định khuyến khích)</td>
+          <td><em>"Nếu mất hết dữ liệu ngay bây giờ, phải mất bao lâu để khôi phục?"</em></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-purple">Thêm Storage</span></td>
+          <td>Ceph block storage SSD, 3x replication. Gắn vào VM như ổ cứng thêm.</td>
+          <td>Database, file server, media</td>
+          <td><em>"Dữ liệu đang tăng bao nhiêu mỗi tháng? Có đủ chỗ cho 12 tháng tới không?"</em></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">S3 Object Storage</span></td>
+          <td>API tương thích Amazon S3. Lưu file không giới hạn, truy cập qua HTTP.</td>
+          <td>Startup, SaaS, media company</td>
+          <td><em>"Anh/chị đang trả bao nhiêu cho S3? Chúng tôi có tương thích, không phí egress."</em></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-teal">Dịch vụ quản lý</span></td>
+          <td>Đội EcoCloud quản lý toàn bộ: cập nhật bảo mật, tối ưu, xử lý sự cố, báo cáo.</td>
+          <td>SMB không có IT team</td>
+          <td><em>"Đội IT của anh/chị có mấy người? Có ai trực 24/7 không?"</em></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-red">Báo cáo Compliance</span></td>
+          <td>Báo cáo tuân thủ CIS/PCI/HIPAA định kỳ (tháng/quý). Dùng cho kiểm toán.</td>
+          <td>Tài chính, y tế, chính phủ, bảo hiểm</td>
+          <td><em>"Có ai yêu cầu bằng chứng tuân thủ bảo mật khi kiểm toán không?"</em></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="callout green">
+      <p><strong>Mẹo bán Backup:</strong> Backup là add-on dễ chốt nhất. Hầu hết khách khi được hỏi "nếu mất dữ liệu thì sao?" đều nhận ra ngay lập tức rằng họ cần backup. Đừng hỏi "có muốn mua backup không?" — hãy hỏi "dữ liệu quan trọng nhất của anh/chị là gì?".</p>
+    </div>
+    <div class="callout purple">
+      <p><strong>Mẹo bán Security:</strong> Bán tốt nhất khi có tin tức về tấn công mạng hoặc khách là ngành tài chính/y tế. Hỏi: "Có yêu cầu tuân thủ bảo mật nào cho ngành của anh/chị không?" — Họ thường BẮT BUỘC phải có và sẵn sàng trả.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 17: FAQ — CÂU HỎI THƯỜNG GẶP (Trang 1) -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN V &middot; 17</span>
+    <h2 style="margin-bottom: 0;">Câu Hỏi Thường Gặp (FAQ) — Phần 1</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 14px;">Các câu hỏi khách hàng hay đặt ra và cách trả lời rõ ràng, dễ hiểu.</p>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="objection">
+      <div class="q">Cloud Server của EcoCloud khác gì shared hosting và VPS thông thường?</div>
+      <div class="a">
+        Shared hosting: nhiều website chia sẻ chung 1 server — chậm khi người khác dùng nhiều. VPS thông thường: cấp phát tài nguyên nhưng nhiều nơi overselling (bán quá số thực có).
+        <br><br><strong>EcoCloud Cloud Server:</strong> Dùng KVM — mỗi VM là một server riêng biệt với CPU, RAM cấp phát cố định, không chia sẻ. Thêm vào đó: lưu trữ Ceph SSD 3x replication (không mất dữ liệu khi disk hỏng), giám sát 24/7, và 4 lớp bảo mật. VPS thường không có những thứ này.
+      </div>
+    </div>
+
+    <div class="objection">
+      <div class="q">Dữ liệu của tôi có an toàn không? Nếu server hỏng thì sao?</div>
+      <div class="a">
+        Dữ liệu được bảo vệ bởi <strong>3 lớp an toàn</strong>:
+        <br>&#8226; <strong>Ceph 3x Replication:</strong> Mọi dữ liệu được lưu 3 bản sao trên 3 server khác nhau. Nếu 1 server hỏng, 2 bản còn lại vẫn hoạt động bình thường và hệ thống tự tạo bản sao mới.
+        <br>&#8226; <strong>Veeam Backup:</strong> Sao lưu tự động hàng ngày. Khôi phục toàn bộ VM trong vài phút.
+        <br>&#8226; <strong>HA Failover:</strong> Nếu server vật lý hỏng, VM tự động được khởi động lại trên server khác.
+        <br><br>Tóm lại: dữ liệu luôn có ít nhất 3 bản sao + backup hàng ngày. Mất dữ liệu gần như không thể xảy ra.
+      </div>
+    </div>
+
+    <div class="objection">
+      <div class="q">Tại sao chọn KVM mà không phải VMware hay Hyper-V?</div>
+      <div class="a">
+        <br>&#8226; <strong>Hiệu năng:</strong> KVM là Type-1 hypervisor tích hợp Linux kernel — overhead chỉ 1-3%. Ngang hoặc tốt hơn VMware (2-5% overhead).
+        <br>&#8226; <strong>Chi phí:</strong> KVM miễn phí. VMware vSphere tốn ~$6,000/CPU/năm — chi phí này cuối cùng khách hàng phải trả.
+        <br>&#8226; <strong>Ai dùng:</strong> Google Cloud Platform, DigitalOcean, IBM Cloud, Red Hat đều chạy trên KVM.
+        <br>&#8226; <strong>Không lock-in:</strong> VM trên KVM dùng format chuẩn Linux — dễ dàng migrate sang nơi khác nếu cần.
+      </div>
+    </div>
+
+    <div class="objection">
+      <div class="q">Uptime cam kết bao nhiêu? Nếu sự cố thì xử lý thế nào?</div>
+      <div class="a">
+        Cam kết <strong>SLA 99.9% uptime</strong> (tối đa ~8.7 giờ downtime cả năm). Quy trình xử lý sự cố:
+        <br>&#8226; Hệ thống tự động giám sát mỗi 15 giây → phát hiện bất thường trong &lt;1 phút
+        <br>&#8226; Cảnh báo tự động gửi đội ngũ kỹ thuật trong &lt;3 giây
+        <br>&#8226; Đội ngũ phản hồi trong &lt;15 phút (giờ hành chính)
+        <br>&#8226; Khôi phục VM từ backup: &lt;5 phút
+        <br>&#8226; Bảo trì kế hoạch: thông báo trước 48 giờ, dùng Live Migration (0 downtime)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 17b: FAQ — CÂU HỎI THƯỜNG GẶP (Trang 2) -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN V &middot; 17b</span>
+    <h2 style="margin-bottom: 0;">Câu Hỏi Thường Gặp (FAQ) — Phần 2</h2>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div class="objection">
+      <div class="q">Băng thông 300 Mbps nghĩa là gì? Có bị giới hạn traffic không?</div>
+      <div class="a">
+        300 Mbps là tốc độ tối đa mà VM có thể truyền/nhận dữ liệu — đủ cho hầu hết website, ứng dụng web, và API. <strong>Không giới hạn dung lượng transfer</strong> — dùng bao nhiêu cũng được, không phí phát sinh. So sánh: AWS tính phí $0.09/GB cho mỗi GB dữ liệu truyền ra ngoài (egress). Với EcoCloud, bandwidth là miễn phí và không giới hạn.
+      </div>
+    </div>
+
+    <div class="objection">
+      <div class="q">Tôi có thể nâng cấp hoặc thay đổi gói giữa chừng không?</div>
+      <div class="a">
+        <strong>Có.</strong> Nâng cấp CPU, RAM, SSD bất kỳ lúc nào. Với RAM và SSD — nâng cấp không cần khởi động lại server. Với CPU — cần restart nhanh (vài giây). Hạ cấp cũng được — liên hệ đội ngũ hỗ trợ. Chuyển đổi giữa gói Cơ Bản / Nâng Cao / Enterprise: tính giá mới từ tháng tiếp theo.
+      </div>
+    </div>
+
+    <div class="objection">
+      <div class="q">aaPanel là gì? Tôi có bắt buộc phải dùng không?</div>
+      <div class="a">
+        aaPanel là phần mềm quản trị server qua giao diện web — giúp cài đặt website, database, SSL, cron job... mà không cần gõ lệnh Linux. <strong>Không bắt buộc</strong> — nếu khách quen dùng command line hoặc có panel khác (cPanel, Plesk, CyberPanel), họ hoàn toàn có thể cài theo ý. aaPanel được cài sẵn miễn phí để khách mới dễ bắt đầu.
+      </div>
+    </div>
+
+    <div class="objection">
+      <div class="q">EcoCloud có hỗ trợ cài đặt ứng dụng / migrate dữ liệu không?</div>
+      <div class="a">
+        <strong>Có.</strong> Đội ngũ kỹ thuật hỗ trợ miễn phí:
+        <br>&#8226; Cài đặt hệ điều hành, web server (Nginx/Apache), database (MySQL/PostgreSQL)
+        <br>&#8226; Migrate website, database, email từ hosting/VPS cũ sang EcoCloud
+        <br>&#8226; Cấu hình DNS, SSL, firewall
+        <br>&#8226; Tư vấn cấu hình tối ưu cho ứng dụng của khách
+        <br><br>Với gói Nâng Cao và Enterprise: hỗ trợ kỹ thuật chuyên sâu 24/7.
+      </div>
+    </div>
+
+    <div class="objection">
+      <div class="q">Thanh toán như thế nào? Có hợp đồng dài hạn không?</div>
+      <div class="a">
+        <br>&#8226; <strong>Thanh toán:</strong> Chuyển khoản ngân hàng hoặc ví điện tử. Hóa đơn VAT đầy đủ.
+        <br>&#8226; <strong>Chu kỳ:</strong> Tháng, quý, hoặc năm. Thanh toán trước cho chu kỳ tiếp theo.
+        <br>&#8226; <strong>Hợp đồng:</strong> Không bắt buộc hợp đồng dài hạn. Có thể dùng theo tháng. Hợp đồng 6+ tháng sẽ được giá VIP ưu đãi hơn.
+        <br>&#8226; <strong>Dùng thử:</strong> Miễn phí 7 ngày để trải nghiệm trước khi quyết định.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 17c: XỬ LÝ TỪ CHỐI -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN V &middot; 17c</span>
+    <h2 style="margin-bottom: 0;">Xử Lý Từ Chối Thường Gặp</h2>
+  </div>
+
+  <p class="subtitle" style="margin-bottom: 14px;">Khi khách hàng nói "không", đừng phản bác — hãy đồng ý một phần rồi bổ sung thông tin.</p>
+
+  <div class="grid grid-2" style="gap: 12px;">
+    <div class="objection">
+      <div class="q">"AWS/Azure uy tín hơn, dùng toàn cầu"</div>
+      <div class="a">
+        Đúng, AWS tốt cho doanh nghiệp quốc tế. Nhưng với doanh nghiệp VN:
+        <br>&#8226; <strong>Luật pháp:</strong> Luật An ninh mạng yêu cầu lưu dữ liệu trong nước
+        <br>&#8226; <strong>Chi phí:</strong> Phí egress AWS $0.09/GB — 1TB/tháng = &gt;2 triệu chỉ riêng bandwidth
+        <br>&#8226; <strong>Hỗ trợ:</strong> AWS tiếng Anh, premium support $100/tháng. EcoCloud tiếng Việt miễn phí
+        <br>&#8226; <strong>Công nghệ:</strong> KVM = Google Cloud dùng. Prometheus = chuẩn monitoring công nghiệp
+      </div>
+    </div>
+    <div class="objection">
+      <div class="q">"Giá cao hơn VPS khác"</div>
+      <div class="a">
+        So sánh tổng chi phí sở hữu (TCO), không chỉ giá VM:
+        <br>&#8226; <strong>Bảo mật:</strong> Tự triển khai SIEM + IDS tốn ~$200-500/tháng
+        <br>&#8226; <strong>Giám sát:</strong> Không có → không biết hỏng cho đến khi khách phàn nàn
+        <br>&#8226; <strong>Backup:</strong> Không có → mất data = mất khách = mất doanh thu
+        <br>&#8226; <strong>Storage:</strong> Single disk → hỏng là mất toàn bộ
+        <br><em>TCO của EcoCloud thấp hơn "VPS rẻ + tự làm mọi thứ".</em>
+      </div>
+    </div>
+    <div class="objection">
+      <div class="q">"Chúng tôi tự quản lý server được"</div>
+      <div class="a">
+        Hỏi: "Đội IT có mấy người? Có trực 24/7 không?"
+        <br>&#8226; 1 sysadmin senior = 15-25 triệu/tháng
+        <br>&#8226; Trực 24/7 cần 3 người = 45-75 triệu/tháng
+        <br>&#8226; Chưa tính: training, bảo mật, tool, nghỉ phép, turnover
+        <br>&#8226; EcoCloud = đội chuyên trách 24/7, chi phí thấp hơn 1 nhân sự IT
+      </div>
+    </div>
+    <div class="objection">
+      <div class="q">"Open-source không đáng tin"</div>
+      <div class="a">
+        Các tổ chức lớn nhất thế giới dùng open-source:
+        <br>&#8226; <strong>KVM:</strong> Google Cloud, IBM Cloud
+        <br>&#8226; <strong>Ceph:</strong> CERN, Bloomberg (petabytes)
+        <br>&#8226; <strong>Prometheus:</strong> 90% công ty lớn (CNCF graduated)
+        <br>&#8226; <strong>Wazuh:</strong> 10,000+ doanh nghiệp toàn cầu
+        <br><em>Open-source = minh bạch, hàng triệu dev review. An toàn hơn phần mềm đóng.</em>
+      </div>
+    </div>
+    <div class="objection">
+      <div class="q">"Cần xem demo trước"</div>
+      <div class="a">
+        Rất sẵn lòng! Chúng tôi cung cấp:
+        <br>&#8226; Demo Grafana dashboard trực tiếp (hệ thống thực)
+        <br>&#8226; Demo Wazuh SIEM — phát hiện tấn công thực
+        <br>&#8226; Dùng thử 7 ngày miễn phí
+        <br>&#8226; Báo cáo bảo mật mẫu
+      </div>
+    </div>
+    <div class="objection">
+      <div class="q">"Lo về uptime và disaster recovery"</div>
+      <div class="a">
+        Nhiều lớp dự phòng:
+        <br>&#8226; OpenNebula HA 3 node — 1 hỏng, 2 tự tiếp quản
+        <br>&#8226; Ceph 3x replication — disk hỏng, data không mất
+        <br>&#8226; Veeam khôi phục VM trong vài phút
+        <br>&#8226; Giám sát 24/7, phát hiện &lt;1 phút, thông báo &lt;3 giây
+        <br>&#8226; SLA 99.9% uptime (~8.7h downtime/năm)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 18: QUY TRÌNH BÁN HÀNG -->
+<!-- ================================================ -->
+<div class="slide">
+  <div class="section-hdr">
+    <span class="section-num">PHẦN V &middot; 18</span>
+    <h2 style="margin-bottom: 0;">Quy Trình Bán Hàng 5 Bước</h2>
+  </div>
+
+  <div class="grid grid-2" style="gap: 20px;">
+    <div>
+      <div class="flow-step" style="margin-bottom: 8px; border-left: 4px solid var(--accent); padding: 16px 18px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <span class="badge badge-accent">Bước 1</span>
+          <strong>Tìm hiểu nhu cầu</strong>
+        </div>
+        <div style="font-size: 12px; color: var(--text2); line-height: 1.7;">
+          Đặt câu hỏi mở để hiểu: loại ứng dụng, quy mô user, yêu cầu bảo mật, ngân sách, pain point hiện tại. Lắng nghe nhiều hơn nói. Ghi chú lại các điểm đau để dùng khi chốt deal.
+        </div>
+      </div>
+      <div class="flow-arrow">&#9660;</div>
+      <div class="flow-step" style="margin-bottom: 8px; border-left: 4px solid var(--green); padding: 16px 18px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <span class="badge badge-green">Bước 2</span>
+          <strong>Đề xuất gói phù hợp</strong>
+        </div>
+        <div style="font-size: 12px; color: var(--text2); line-height: 1.7;">
+          Dựa trên nhu cầu, chọn Starter/Business/Enterprise. Luôn đề xuất kèm add-on phù hợp (tối thiểu là Backup). Giải thích tại sao gói này phù hợp — liên kết với pain point đã nghe.
+        </div>
+      </div>
+      <div class="flow-arrow">&#9660;</div>
+      <div class="flow-step" style="margin-bottom: 8px; border-left: 4px solid var(--purple); padding: 16px 18px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <span class="badge badge-purple">Bước 3</span>
+          <strong>Demo & Chứng minh giá trị</strong>
+        </div>
+        <div style="font-size: 12px; color: var(--text2); line-height: 1.7;">
+          Cho xem Grafana dashboard và Wazuh SIEM thực tế. Đề nghị trial 7 ngày cho khách cần trải nghiệm trước. Tập trung vào giá trị, không phải tính năng kỹ thuật.
+        </div>
+      </div>
+      <div class="flow-arrow">&#9660;</div>
+      <div class="flow-step" style="margin-bottom: 8px; border-left: 4px solid var(--orange); padding: 16px 18px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <span class="badge badge-orange">Bước 4</span>
+          <strong>Xử lý từ chối & Chốt deal</strong>
+        </div>
+        <div style="font-size: 12px; color: var(--text2); line-height: 1.7;">
+          Dùng câu trả lời ở slide "Xử lý từ chối". Luôn so sánh tổng chi phí sở hữu (TCO), không chỉ giá VM đơn lẻ. Nhấn mạnh lại các pain point khách đã chia sẻ ở Bước 1.
+        </div>
+      </div>
+      <div class="flow-arrow">&#9660;</div>
+      <div class="flow-step" style="border-left: 4px solid var(--green); padding: 16px 18px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <span class="badge badge-green">Bước 5</span>
+          <strong>Onboarding & Upsell tiếp theo</strong>
+        </div>
+        <div style="font-size: 12px; color: var(--text2); line-height: 1.7;">
+          Setup xong → gửi dashboard Grafana cho khách (tạo ấn tượng chuyên nghiệp). Sau 1-2 tháng: review sử dụng và đề xuất add-on bổ sung dựa trên dữ liệu thực tế.
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Câu Hỏi Khám Phá Nhu Cầu</h3>
+      <div class="card" style="margin-bottom: 10px;">
+        <div class="card-title" style="color: var(--accent);">Về hạ tầng hiện tại</div>
+        <ul class="clean" style="font-size: 12px;">
+          <li><span class="li-icon">&#8226;</span> "Hiện tại server đang đặt ở đâu? Hài lòng không?"</li>
+          <li><span class="li-icon">&#8226;</span> "Có bao nhiêu server/VM đang chạy?"</li>
+          <li><span class="li-icon">&#8226;</span> "Chi phí hàng tháng hiện tại cho hạ tầng IT là bao nhiêu?"</li>
+          <li><span class="li-icon">&#8226;</span> "Đã từng gặp sự cố downtime chưa? Xử lý mất bao lâu?"</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom: 10px;">
+        <div class="card-title" style="color: var(--green);">Về bảo mật</div>
+        <ul class="clean" style="font-size: 12px;">
+          <li><span class="li-icon">&#8226;</span> "Có hệ thống giám sát bảo mật nào đang chạy không?"</li>
+          <li><span class="li-icon">&#8226;</span> "Đã từng bị tấn công hoặc mất dữ liệu chưa?"</li>
+          <li><span class="li-icon">&#8226;</span> "Ngành của anh/chị có yêu cầu tuân thủ bảo mật nào không?"</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-bottom: 10px;">
+        <div class="card-title" style="color: var(--orange);">Về sao lưu & khôi phục</div>
+        <ul class="clean" style="font-size: 12px;">
+          <li><span class="li-icon">&#8226;</span> "Dữ liệu quan trọng nhất trong hệ thống là gì?"</li>
+          <li><span class="li-icon">&#8226;</span> "Đang sao lưu bằng cách nào? Tần suất?"</li>
+          <li><span class="li-icon">&#8226;</span> "Nếu mất toàn bộ dữ liệu, mất bao lâu để khôi phục?"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color: var(--purple);">Về tăng trưởng</div>
+        <ul class="clean" style="font-size: 12px;">
+          <li><span class="li-icon">&#8226;</span> "Kế hoạch mở rộng trong 6-12 tháng tới?"</li>
+          <li><span class="li-icon">&#8226;</span> "Lượng user/traffic tăng bao nhiêu % mỗi tháng?"</li>
+          <li><span class="li-icon">&#8226;</span> "Ngân sách IT dự kiến cho năm tới là bao nhiêu?"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- SLIDE 19: TỔNG KẾT -->
+<!-- ================================================ -->
+<div class="slide" style="justify-content: center;">
+  <div style="text-align: center; margin-bottom: 32px;">
+    <h1 style="font-size: 32px;">Tổng Kết: Bán Gì & Bán Thế Nào</h1>
+    <p class="subtitle" style="margin: 8px auto 0; max-width: 500px;">Ba nguyên tắc quan trọng nhất cần nhớ khi bán EcoCloud.</p>
+  </div>
+
+  <div class="grid grid-2" style="margin-bottom: 28px; max-width: 960px; margin-left: auto; margin-right: auto;">
+    <div class="card" style="border-top: 3px solid var(--accent);">
+      <h3 style="color: var(--accent);">Sản phẩm & Dịch vụ</h3>
+      <ul class="clean" style="font-size: 13px;">
+        <li><span class="li-icon" style="color:var(--accent);">&#9654;</span> <strong>Cloud Server</strong> — Sản phẩm cốt lõi, KVM dedicated, nguồn doanh thu chính</li>
+      </ul>
+      <hr class="divider">
+      <div style="font-size: 12px; color: var(--text3); font-weight: 600; margin-bottom: 8px;">ADD-ON TĂNG DOANH THU:</div>
+      <ul class="clean" style="font-size: 13px;">
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Cloud Security</strong> — SIEM + IDS + YARA + Compliance (4 lớp)</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Cloud Backup</strong> — Veeam enterprise, sao lưu tự động + DR</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Cloud Storage</strong> — Ceph phân tán, 3x replication, S3-compatible</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Managed Services</strong> — Quản lý toàn bộ cho khách không có IT</li>
+        <li><span class="li-icon" style="color:var(--green);">&#10003;</span> <strong>Compliance Report</strong> — Báo cáo tuân thủ cho kiểm toán</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-top: 3px solid var(--green);">
+      <h3 style="color: var(--green);">3 Nguyên Tắc Vàng</h3>
+
+      <div style="padding: 14px; background: var(--accent-light); border-radius: 6px; margin-bottom: 10px;">
+        <div style="font-family: 'Merriweather', serif; font-size: 20px; font-weight: 700; color: var(--accent);">1</div>
+        <div style="font-size: 13px; margin-top: 4px;"><strong>Bán giải pháp, không bán server</strong></div>
+        <div style="font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.6;">Khách không cần VM — họ cần website chạy nhanh, dữ liệu an toàn, và yên tâm kinh doanh. Hãy nói về kết quả, không phải thông số kỹ thuật.</div>
+      </div>
+
+      <div style="padding: 14px; background: var(--green-light); border-radius: 6px; margin-bottom: 10px;">
+        <div style="font-family: 'Merriweather', serif; font-size: 20px; font-weight: 700; color: var(--green);">2</div>
+        <div style="font-size: 13px; margin-top: 4px;"><strong>So sánh tổng chi phí sở hữu (TCO)</strong></div>
+        <div style="font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.6;">VPS giá rẻ + tự backup + tự bảo mật + tuyển IT = đắt hơn EcoCloud. Luôn so sánh tổng thể, đừng để khách chỉ nhìn giá VM.</div>
+      </div>
+
+      <div style="padding: 14px; background: var(--orange-light); border-radius: 6px;">
+        <div style="font-family: 'Merriweather', serif; font-size: 20px; font-weight: 700; color: var(--orange);">3</div>
+        <div style="font-size: 13px; margin-top: 4px;"><strong>Luôn đề xuất ít nhất 1 add-on</strong></div>
+        <div style="font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.6;">Mỗi khách nên có ít nhất Backup. Enterprise cần Security + Compliance. Đừng bán server trần — add-on là nơi tạo giá trị và tăng doanh thu.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; color: var(--text3); font-size: 11px; border-top: 1px solid var(--border); padding-top: 16px; max-width: 400px; margin: 0 auto;">
+    Tài liệu nội bộ — Công Ty TNHH Công Nghệ EcoCloud<br>
+    Phiên bản 1.0 — Tháng 3/2026
+  </div>
+</div>
+
+</div><!-- /slide-container -->
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <div class="counter" id="slideCounter">01 / 25</div>
+  <button class="nav-btn" id="prevBtn" onclick="prevSlide()">&larr; Trước</button>
+  <div class="title" id="navTitle"></div>
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">Tiếp &rarr;</button>
+  <div class="counter" style="text-align: right;"><kbd>&larr;</kbd> <kbd>&rarr;</kbd></div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+
+const titles = [
+  'EcoCloud — Tài Liệu Kinh Doanh',
+  'Cloud Là Gì? — Bức Tranh Toàn Cảnh',
+  'Thuật Ngữ Cần Biết',
+  'EcoCloud Là Gì?',
+  'Hạ Tầng Tổng Thể',
+  'Năng Lực Hạ Tầng',
+  'Cloud Server (VPS/VM)',
+  'So Sánh Nền Tảng, Hiệu Năng & SLA',
+  'Cloud Security — Bảo Mật 4 Lớp',
+  'Cloud Storage — Ceph',
+  'Cloud Backup — Veeam',
+  'Giám Sát 24/7 & SLA',
+  '6 Điểm Bán Hàng Cốt Lõi',
+  'So Sánh Cạnh Tranh',
+  'Đối Tượng Khách Hàng',
+  'Gói Dịch Vụ',
+  '2 Hình Thức Tính Giá',
+  'Bảng Giá & Ví Dụ Tính Giá',
+  'Giá Backup, Storage & Add-on',
+  'Add-on & Upsell',
+  'FAQ — Câu Hỏi Thường Gặp (1)',
+  'FAQ — Câu Hỏi Thường Gặp (2)',
+  'Xử Lý Từ Chối',
+  'Quy Trình Bán Hàng',
+  'Tổng Kết'
+];
+
+function showSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  currentSlide = Math.max(0, Math.min(n, totalSlides - 1));
+  slides[currentSlide].classList.add('active');
+  updateUI();
+}
+function nextSlide() { showSlide(currentSlide + 1); }
+function prevSlide() { showSlide(currentSlide - 1); }
+
+function updateUI() {
+  document.getElementById('slideCounter').textContent = String(currentSlide + 1).padStart(2, '0') + ' / ' + totalSlides;
+  document.getElementById('prevBtn').disabled = currentSlide === 0;
+  document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  document.getElementById('navTitle').textContent = titles[currentSlide] || '';
+  document.getElementById('progressBar').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  document.querySelectorAll('.toc-item').forEach((item, i) => { item.classList.toggle('active', i === currentSlide); });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+  else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); }
+});
+
+document.getElementById('tocToggle').addEventListener('click', () => { document.getElementById('tocPanel').classList.toggle('open'); });
+document.querySelectorAll('.toc-item').forEach(item => {
+  item.addEventListener('click', () => { showSlide(parseInt(item.dataset.slide)); document.getElementById('tocPanel').classList.remove('open'); });
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); } });
+
+updateUI();
+
+/* ─── Mind Map: definitions ─── */
+const mmDefs = {
+  cloud: {
+    title: 'Cloud Computing',
+    color: 'var(--accent)',
+    desc: '<strong>Cloud Computing</strong> (điện toán đám mây) là việc cung cấp tài nguyên máy tính — server, lưu trữ, mạng, phần mềm — qua Internet hoặc mạng nội bộ, thay vì sở hữu và vận hành phần cứng vật lý tại chỗ.<br><br><strong>Ưu điểm:</strong> Không cần đầu tư phần cứng ban đầu, mở rộng linh hoạt, trả theo mức sử dụng, truy cập từ mọi nơi.<br><br><strong>Ví dụ dễ hiểu:</strong> Thay vì mua máy phát điện riêng, bạn dùng điện lưới — trả tiền theo số kWh dùng. Cloud cũng vậy — dùng server qua mạng, trả theo tài nguyên dùng.'
+  },
+  public: {
+    title: 'Public Cloud',
+    color: 'var(--blue)',
+    desc: '<strong>Public Cloud</strong> là hạ tầng cloud do bên thứ ba sở hữu và vận hành, cho nhiều khách hàng cùng thuê chung.<br><br><strong>Ví dụ:</strong> AWS, Azure, Google Cloud — bạn thuê server trên hạ tầng của họ, chia sẻ phần cứng với hàng triệu khách hàng khác.<br><br><strong>Ưu điểm:</strong> Khởi đầu nhanh, quy mô toàn cầu, nhiều dịch vụ sẵn có.<br><strong>Nhược điểm:</strong> Chi phí khó dự đoán (phí bandwidth, API call, egress), dữ liệu nằm ngoài Việt Nam, hỗ trợ tiếng Anh, vendor lock-in cao.'
+  },
+  private: {
+    title: 'Private Cloud',
+    color: 'var(--green)',
+    desc: '<strong>Private Cloud</strong> là hạ tầng cloud do một tổ chức duy nhất sở hữu hoặc thuê riêng, không chia sẻ với ai khác.<br><br><strong>EcoCloud là Private Cloud</strong> — toàn bộ phần cứng do EcoCloud sở hữu, đặt tại Việt Nam, mỗi khách hàng có tài nguyên riêng biệt.<br><br><strong>Ưu điểm:</strong> Toàn quyền kiểm soát, bảo mật cao hơn, tuân thủ pháp luật VN, chi phí cố định, không phí ẩn.<br><strong>Phù hợp:</strong> Doanh nghiệp cần chủ quyền dữ liệu, ngành tài chính/y tế, tổ chức chính phủ.'
+  },
+  hybrid: {
+    title: 'Hybrid Cloud',
+    color: 'var(--purple)',
+    desc: '<strong>Hybrid Cloud</strong> là mô hình kết hợp Private Cloud và Public Cloud, cho phép dữ liệu và ứng dụng di chuyển giữa hai môi trường.<br><br><strong>Ví dụ:</strong> Lưu dữ liệu nhạy cảm (tài chính, y tế) trên Private Cloud tại VN, nhưng dùng Public Cloud cho website công khai hoặc xử lý tải đột biến.<br><br><strong>Phù hợp khi:</strong> Doanh nghiệp vừa cần bảo mật dữ liệu trong nước vừa cần khả năng mở rộng nhanh cho một số workload nhất định.'
+  },
+  vm: {
+    title: 'VM (Virtual Machine) / VPS',
+    color: 'var(--accent)',
+    desc: '<strong>VM (Virtual Machine)</strong> — máy chủ ảo, là một "máy tính trong máy tính". Có CPU, RAM, disk riêng, chạy hệ điều hành riêng, hoạt động như một server thật nhưng nằm trên phần cứng chia sẻ.<br><br><strong>VPS (Virtual Private Server)</strong> — tên thương mại của VM khi bán cho khách hàng.<br><br><strong>Tại EcoCloud:</strong> Mỗi VM dùng công nghệ KVM — ảo hóa phần cứng thực sự, tài nguyên cấp phát riêng, không overselling. Mua 4 CPU + 8GB RAM = luôn có đúng chừng đó.'
+  },
+  security: {
+    title: 'Cloud Security',
+    color: 'var(--red)',
+    desc: '<strong>Cloud Security</strong> là tập hợp các biện pháp bảo mật để bảo vệ dữ liệu, ứng dụng và hạ tầng trên cloud khỏi các mối đe dọa.<br><br><strong>EcoCloud có 4 lớp bảo mật:</strong><br>• <strong>SIEM (Wazuh)</strong> — Giám sát log, phát hiện hành vi bất thường 24/7<br>• <strong>IDS (CrowdSec)</strong> — Phát hiện & chặn tấn công tự động<br>• <strong>Malware (YARA)</strong> — Quét phần mềm độc hại với 523 bộ nhận dạng<br>• <strong>Compliance (OpenSCAP)</strong> — Kiểm tra tuân thủ chuẩn CIS, PCI-DSS, HIPAA<br><br><strong>So sánh:</strong> VPS thường chỉ có firewall cơ bản. EcoCloud có đầy đủ 4 lớp — tương đương bảo mật ngân hàng.'
+  },
+  storage: {
+    title: 'Cloud Storage',
+    color: 'var(--purple)',
+    desc: '<strong>Cloud Storage</strong> là dịch vụ lưu trữ dữ liệu trên hạ tầng cloud, truy cập qua mạng thay vì ổ cứng vật lý tại chỗ.<br><br><strong>EcoCloud dùng Ceph</strong> — hệ thống lưu trữ phân tán:<br>• Mỗi dữ liệu được sao 3 bản trên 3 server khác nhau<br>• Hỏng 1 server → 2 bản còn lại vẫn an toàn, hệ thống tự tạo bản mới<br>• Mở rộng bằng cách thêm server, không cần downtime<br><br><strong>3 loại:</strong> Block Storage (ổ cứng ảo cho VM), Object Storage (S3-compatible cho file/ảnh), Shared Filesystem (thư mục chia sẻ nhiều VM).'
+  },
+  backup: {
+    title: 'Cloud Backup',
+    color: 'var(--orange)',
+    desc: '<strong>Cloud Backup</strong> là dịch vụ sao lưu dữ liệu tự động, lưu trữ bản sao an toàn để khôi phục khi có sự cố (xóa nhầm, ransomware, hỏng phần cứng).<br><br><strong>EcoCloud dùng Veeam</strong> — hãng backup số 1 thế giới cho ảo hóa (82% Fortune 500 sử dụng):<br>• Sao lưu tự động theo lịch (hàng ngày/tuần/tháng)<br>• Khôi phục toàn bộ VM trong vài phút<br>• Khôi phục từng file cụ thể mà không cần restore cả server<br>• Mã hóa AES-256 — ngay cả nếu ai đó lấy được file backup, họ không đọc được<br><br><strong>RPO / RTO:</strong> RPO = mất tối đa bao nhiêu dữ liệu. RTO = mất bao lâu để khôi phục. Veeam: RPO gần 0, RTO vài phút.'
+  }
+};
+
+/* ─── Mind Map: positioning & interaction ─── */
+function initMindMap() {
+  const map = document.getElementById('mindmap');
+  if (!map) return;
+  const nodes = map.querySelectorAll('.mm-node');
+  const center = map.querySelector('.mm-center');
+  const svg = document.getElementById('mmLines');
+  const popup = document.getElementById('mmPopup');
+  const overlay = document.getElementById('mmOverlay');
+  const popTitle = document.getElementById('mmPopTitle');
+  const popDesc = document.getElementById('mmPopDesc');
+  const closeBtn = document.getElementById('mmClose');
+
+  // Position nodes in a circle around center
+  const positions = [
+    { x: '50%', y: '4%' },     // cloud (top)
+    { x: '88%', y: '18%' },    // public (top-right)
+    { x: '10%', y: '18%' },    // private (top-left)
+    { x: '90%', y: '58%' },    // hybrid (right)
+    { x: '8%', y: '58%' },     // vm (left)
+    { x: '78%', y: '88%' },    // security (bottom-right)
+    { x: '50%', y: '92%' },    // storage (bottom)
+    { x: '20%', y: '88%' },    // backup (bottom-left)
+  ];
+
+  nodes.forEach((node, i) => {
+    node.style.left = positions[i].x;
+    node.style.top = positions[i].y;
+    node.style.transform = 'translate(-50%, -50%)';
+  });
+
+  // Draw SVG lines
+  function drawLines() {
+    const mapRect = map.getBoundingClientRect();
+    const cx = center.getBoundingClientRect();
+    const cxMid = cx.left - mapRect.left + cx.width / 2;
+    const cyMid = cx.top - mapRect.top + cx.height / 2;
+    let lines = '';
+    nodes.forEach(node => {
+      const nr = node.getBoundingClientRect();
+      const nx = nr.left - mapRect.left + nr.width / 2;
+      const ny = nr.top - mapRect.top + nr.height / 2;
+      const color = getComputedStyle(node).borderColor;
+      lines += '<line x1="'+cxMid+'" y1="'+cyMid+'" x2="'+nx+'" y2="'+ny+'" stroke="'+color+'" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="6,4"/>';
+    });
+    svg.innerHTML = lines;
+  }
+  setTimeout(drawLines, 100);
+  window.addEventListener('resize', drawLines);
+
+  // Click handling
+  function openDef(key) {
+    const d = mmDefs[key];
+    if (!d) return;
+    popTitle.innerHTML = d.title;
+    popTitle.style.color = d.color;
+    popDesc.innerHTML = d.desc;
+    popup.classList.add('show');
+    overlay.classList.add('show');
+    nodes.forEach(n => n.classList.remove('active'));
+    const activeNode = map.querySelector('[data-def="'+key+'"]');
+    if (activeNode) { activeNode.classList.add('active'); activeNode.style.borderColor = d.color; }
+  }
+  function closeDef() {
+    popup.classList.remove('show');
+    overlay.classList.remove('show');
+    nodes.forEach(n => n.classList.remove('active'));
+  }
+  nodes.forEach(node => {
+    node.addEventListener('click', (e) => { e.stopPropagation(); openDef(node.dataset.def); });
+  });
+  closeBtn.addEventListener('click', closeDef);
+  overlay.addEventListener('click', closeDef);
+}
+
+initMindMap();
+</script>
+</body>
+</html>
